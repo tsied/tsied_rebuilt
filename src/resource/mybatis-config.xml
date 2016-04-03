@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>  
+        <setting name="cacheEnabled" value="true"/>  
+        <setting name="callSettersOnNulls" value="true"/>
+        <setting name="defaultStatementTimeout" value="15000" />  
+    </settings> 
+    
+    <typeAliases>
+    	<typeAlias  alias="_script" type="com.elk.entity.Script"/>
+    	<typeAlias  alias="_menu" type="com.elk.entity.Menu"/>
+    	<typeAlias  alias="_user" type="com.elk.entity.User"/>
+    	<typeAlias  alias="_dic" type="com.elk.entity.Dic"/>
+    	<typeAlias  alias="_advert" type="com.elk.entity.Advert"/>
+    </typeAliases>
+    
+    <mappers>
+    	<mapper resource="resource/mybatisConfig/script.xml"/>
+    	<mapper resource="resource/mybatisConfig/menu.xml"/>
+    	<mapper resource="resource/mybatisConfig/dic.xml"/>
+    	<mapper resource="resource/mybatisConfig/advert.xml"/>
+    </mappers>
+</configuration> 

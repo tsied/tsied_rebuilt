@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="renderer" content="webkit">
+<title>注销登录</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<!-- bootstrap & fontawesome -->
+<link rel="stylesheet" href="assets/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="assets/css/fileinput.min.css"/>
+<link rel="stylesheet" href="assets/font-awesome/4.2.0/css/font-awesome.min.css"/>
+<!-- page specific plugin styles -->
+<!-- text fonts -->
+<link rel="stylesheet" href="assets/fonts/fonts.googleapis.com.css"/>
+<!-- ace styles -->
+<link rel="stylesheet" type="text/css" href="assets/css/chosen.min.css"/>
+<link rel="stylesheet" href="assets/css/ace.min.css" class="ace-main-stylesheet" id="main-ace-style"/>
+<style type="text/css">
+    body {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+    }
+    @media only screen and (max-width: 600px) {
+        table[class="table-row"] {
+            float: none !important;
+            width: 98% !important;
+            padding-left: 20px !important;
+            padding-right: 20px !important;
+        }
+        table[class="table-row-fixed"] {
+            float: none !important;
+            width: 98% !important;
+        }
+        table[class="table-col"], table[class="table-col-border"] {
+            float: none !important;
+            width: 100% !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            table-layout: fixed;
+        }
+        td[class="table-col-td"] {
+            width: 100% !important;
+        }
+        table[class="table-col-border"] + table[class="table-col-border"] {
+            padding-top: 12px;
+            margin-top: 12px;
+            border-top: 1px solid #E8E8E8;
+        }
+        table[class="table-col"] + table[class="table-col"] {
+            margin-top: 15px;
+        }
+        td[class="table-row-td"] {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+        table[class="navbar-row"] , td[class="navbar-row-td"] {
+            width: 100% !important;
+        }
+        img {
+            max-width: 100% !important;
+            display: inline !important;
+        }
+        img[class="pull-right"] {
+            float: right;
+            margin-left: 11px;
+            max-width: 125px !important;
+            padding-bottom: 0 !important;
+        }
+        img[class="pull-left"] {
+            float: left;
+            margin-right: 11px;
+            max-width: 125px !important;
+            padding-bottom: 0 !important;
+        }
+        table[class="table-space"], table[class="header-row"] {
+            float: none !important;
+            width: 98% !important;
+        }
+        td[class="header-row-td"] {
+            width: 100% !important;
+        }
+    }
+    @media only screen and (max-width: 480px) {
+        table[class="table-row"] {
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+        }
+    }
+    @media only screen and (max-width: 320px) {
+        table[class="table-row"] {
+            padding-left: 12px !important;
+            padding-right: 12px !important;
+        }
+    }
+    @media only screen and (max-width: 458px) {
+        td[class="table-td-wrap"] {
+            width: 100% !important;
+        }
+    }
+</style>
+<script type="text/javascript">
+    var jumped = 0;
+    function JumpUrl(){ 
+        if(jumped==0){ 
+          window.location = '?'; 
+          jumped = 1;  
+        } 
+    }
+    setTimeout('JumpUrl()', 3000);
+</script>
+</head>
+<body>
+<div id="navbar" class="navbar navbar-default">
+  <script type="text/javascript">
+        try{ace.settings.check('navbar' , 'fixed')}catch(e){}
+      </script>
+  <div class="navbar-container" id="navbar-container">
+    <button type="button" class="navbar-toggle menu-toggler pull-left" id="menu-toggler" data-target="#sidebar">
+    <span class="sr-only">Toggle sidebar</span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+    </button>
+    <div class="navbar-header pull-left">
+      <a href="index.html" class="navbar-brand">
+      <small>
+      <i class="fa fa-bar-chart"></i>
+              项目数据管理分析管理系统
+      </small>
+      </a>
+    </div>
+    <div class="navbar-buttons navbar-header pull-right" role="navigation">
+      <ul class="nav ace-nav">
+        <li class="light-blue">
+        <a data-toggle="dropdown" href="#" class="dropdown-toggle">
+        <img class="nav-user-photo" src="assets/avatars/user.jpg" alt="Jason's Photo">
+        <span class="user-info">
+        <small>Welcome,</small>
+                  Admin
+        </span>
+        <i class="ace-icon fa fa-caret-down"></i>
+        </a>
+        <ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+          <li>
+          <a href="#">
+          <i class="ace-icon fa fa-cog"></i>
+                    Settings
+          </a>
+          </li>
+          <li>
+          <a href="profile.html">
+          <i class="ace-icon fa fa-user"></i>
+                    Profile
+          </a>
+          </li>
+          <li class="divider"></li>
+          <li>
+          <a href="#">
+          <i class="ace-icon fa fa-power-off"></i>
+                    Logout
+          </a>
+          </li>
+        </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <!-- /.navbar-container -->
+</div>
+<center style="margin: 0 auto;width: 700px;margin-top: 80px;">
+<table width="100%" height="100%" bgcolor="#E4E6E9" cellspacing="0" cellpadding="0" border="0">
+<tr>
+  <td width="100%" align="center" valign="top" bgcolor="#E4E6E9" style="background-color:#E4E6E9; min-height: 200px;padding-top: 200px!important;">
+    <table>
+    <tr>
+      <td class="table-td-wrap" align="center" width="700" style="border: 2px solid #438eb9; background-color: #fff;">
+        <table class="table-space" height="18" style="height: 18px; font-size: 0px; line-height: 0; width: 700px; background-color: #e4e6e9;" width="600" bgcolor="#E4E6E9" cellspacing="0" cellpadding="0" border="0">
+        <tbody>
+        <tr>
+          <td class="table-space-td" valign="middle" height="18" style="height: 18px; width: 680px; background-color: #e4e6e9;" width="680" bgcolor="#E4E6E9" align="left">
+                        &nbsp;
+          </td>
+        </tr>
+        </tbody>
+        </table>
+        <table class="table-space" height="8" style="height: 8px; font-size: 0px; line-height: 0; width: 680px; background-color: #ffffff;" width="680" bgcolor="#FFFFFF" cellspacing="0" cellpadding="0" border="0">
+        <tbody>
+        <tr>
+          <td class="table-space-td" valign="middle" height="8" style="height: 8px; width: 680px; background-color: #ffffff;" width="680" bgcolor="#FFFFFF" align="left">
+                        &nbsp;
+          </td>
+        </tr>
+        </tbody>
+        </table>
+        <table class="table-row" width="600" bgcolor="#FFFFFF" style="table-layout: fixed; background-color: #ffffff;" cellspacing="0" cellpadding="0" border="0">
+        <tbody>
+        <tr>
+          <td class="table-row-td" style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; font-weight: normal; padding-left: 7px; padding-right: 36px;" valign="top" align="left">
+            <table class="table-col" align="left" width="680" cellspacing="0" cellpadding="0" border="0" style="table-layout: fixed;">
+            <tbody>
+            <tr>
+              <td class="table-col-td" width="680" style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; font-weight: normal; width: 680px;" valign="top" align="left">
+                <table class="header-row" width="680" cellspacing="0" cellpadding="0" border="0" style="table-layout: fixed;">
+                <tbody>
+                <tr>
+                  <td class="header-row-td" width="680" style="font-family: Arial, sans-serif; font-weight: normal; line-height: 19px; color: #478fca; margin: 0px; font-size: 18px; padding-bottom: 10px; padding-top: 15px;" valign="top" align="left">
+                                         成功退出登录！
+                  </td>
+                </tr>
+                </tbody>
+                </table>
+                <div style="font-family: Arial, sans-serif; line-height: 20px; color: #444444; font-size: 13px;">
+                  <b style="color: #777777;">如果没反应请点击此链接...</b>请单击下面按钮返回
+                </div>
+              </td>
+            </tr>
+            </tbody>
+            </table>
+          </td>
+        </tr>
+        </tbody>
+        </table>
+        <table class="table-row" width="600" bgcolor="#FFFFFF" style="table-layout: fixed; background-color: #ffffff;" cellspacing="0" cellpadding="0" border="0">
+        <tbody>
+        <tr>
+          <td class="table-row-td" style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; font-weight: normal; padding-left: 36px; padding-right: 36px;" valign="top" align="left">
+            <table class="table-col" align="left" width="680" cellspacing="0" cellpadding="0" border="0" style="table-layout: fixed;">
+            <tbody>
+            <tr>
+              <td class="table-col-td" width="680" style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; font-weight: normal; width: 680px;" valign="top" align="left">
+                <div style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; text-align: center;margin:40px;margin-left: -20px;">
+                  <a href="?" style="color: #ffffff; text-decoration: none; margin: 0px; text-align: center; vertical-align: baseline; border: 4px solid #6fb3e0; padding: 4px 9px; font-size: 15px; line-height: 21px; background-color: #6fb3e0;">&nbsp; 返回 &nbsp;</a>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+            </table>
+          </td>
+        </tr>
+        </tbody>
+        </table>
+      </td>
+    </tr>
+    </table>
+  </td>
+</tr>
+</table>
+</center>
+<div class="footer">
+    <div class="footer-inner">
+      <div class="footer-content">
+        <span class="bigger-120">
+        <span class="blue">Version V1.0.0 &nbsp;&nbsp;2016</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

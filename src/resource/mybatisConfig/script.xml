@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+ 
+ 
+ <mapper namespace="com.elk.entity.Script">
+
+	<!-- 查询所有指标 -->
+	<select id="scriptList" resultType="_script">
+		select 
+			   index_name  chartName,
+		       es_index esIndex,
+		       es_index_type eSType,
+		       es_template_name scriptName,
+		       chart_type chartType,
+		       view_div_id divId
+		from 
+		      tsied_index_conf
+	</select>
+	
+	<!-- 保存指标 -->
+  	<insert id="saveScript" parameterType="_script"  
+        useGeneratedKeys="true" keyProperty="id">  
+        insert into  tsied_index_conf
+	        (
+		        index_name,
+		        es_index,
+		        es_index_type,
+		        es_template_name,
+		        chart_type,
+		        view_div_id
+		      
+	        )
+	        values 
+	        (
+	        	#{chartName},
+	        	#{esIndex},
+	        	#{eSType},
+	        	#{scriptName},
+	        	#{chartType},
+	        	#{divId}
+	        	
+	        )  
+    </insert>
+    
+    <select id="script" parameterType="_script" resultType="_script">
+    	select 
+			   index_name  chartName,
+		       es_index esIndex,
+		       es_index_type eSType,
+		       es_template_name scriptName,
+		       chart_type chartType,
+		       view_div_id divId
+		from 
+		      tsied_index_conf
+		<where>
+		    1 = 1
+			<if test="chartName != null">		
+		     	and  index_name = '${chartName}'
+		    </if>
+		    <if test="esIndex != null">		
+		     	and  es_index = '${esIndex}'
+		     </if>
+		     <if test="eSType != null">		
+		     	and  es_index_type = '${eSType}'
+		     </if>
+		     <if test="scriptName != null">		
+		     	and  es_template_name = '${scriptName}'
+		     </if>
+		     <if test="chartType != null">		
+		     	and  chart_type = '${chartType}'
+		     </if>
+		     
+		     <if test="divId != null">		
+		     	and  view_div_id = '${divId}'
+		     </if>
+		</where>
+		      
+    </select>
+ </mapper>

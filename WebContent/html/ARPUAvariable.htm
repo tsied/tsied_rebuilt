@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Highcharts Example</title>
+		<script src="/js/highcharts.js"></script>
+		<script src="/js/exporting.js"></script>
+		<script type="text/javascript" src="/js/jquery.min.js"></script>
+		<style type="text/css">
+${demo.css}
+		</style>
+		<script type="text/javascript">
+		
+$(function(){
+	$.ajax({
+		
+		 type:"POST",  
+	       dataType : 'json',  
+	       contentType:"application/x-www-form-urlencoded; charset=UTF-8",
+	       url:"Report",  
+	       success:function(json){ 
+	    	   
+	    	   $('#container').highcharts({
+	    	        chart: {
+	    	            type: 'column'
+	    	        },
+	    	        title: {
+	    	            text: 'ARPU值'
+	    	        },
+	    	        xAxis: {
+	    	            categories: json.categories,
+	    	            crosshair: true
+	    	        },
+	    	        yAxis: {
+	    	            min: 0,
+	    	            title: {
+	    	                text: '钻石数'
+	    	            }
+	    	        },
+	    	        tooltip: {
+	    	            headerFormat: '<span style="font-size:20px">{point.key}</span><table>',
+	    	            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+	    	                '<td style="padding:0"><b>{point.y:.2f} 钻石数</b></td></tr>',
+	    	            footerFormat: '</table>',
+	    	            shared: true,
+	    	            useHTML: true
+	    	        },
+	    	        plotOptions: {
+	    	            column: {
+	    	                pointPadding: 0.2,
+	    	                borderWidth: 0
+	    	            }
+	    	        },
+	    	        series: json.series
+	    	    });
+	       }
+	})
+});		
+		
+
+		</script>
+	</head>
+	<body>
+
+
+<div id="container" style="min-width: 310px; height: 800px; margin: 0 auto"></div>
+
+	</body>
+</html>

@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+ 
+ 
+ <mapper namespace="com.elk.entity.Advert">
+ 
+	<!-- 获取广告集总数 -->
+	<select id="advertcount" resultType="_advert" parameterType="_advert">
+		
+		select 
+			ad_id  adId,
+			ad_name adName,
+			(select dic_value from tsied_sys_dic where id = ad_status) adStatus,
+			(select dic_value from tsied_sys_dic where id = ad_project) adProject,
+			(select dic_value from tsied_sys_dic where id = ad_type) adType,
+			ad_addr adAddr,
+			ad_domain adDomain,
+			(select dic_value from tsied_sys_dic where id = ad_social_software) adSocialSoftware,
+			ad_cost_budget adCostBudget,
+			ad_start_time adStartTime,
+			ad_end_time adEndTime
+		from tsied_advert
+		<where>
+		   1 = 1
+		    <if test="adId != null">
+				and ad_id = #{adId}
+			</if>
+		    
+			<if test="adName != null">
+				and ad_name = #{adName}
+			</if>
+			<if test="adStatus != null and adStatus!=0">
+				and ad_status = #{adStatus}
+			</if>
+			<if test="adProject != null and adProject!=0">
+				and ad_project = #{adProject}
+			</if>
+			<if test="adType != null and adType!=0">
+				and ad_type = #{adType}
+			</if>
+			<if test="adAddr != null">
+				and ad_addr = #{adAddr}
+			</if>
+			<if test="adSocialSoftware != null and adSocialSoftware!=0">
+				and ad_social_software = #{adSocialSoftware}
+			</if>
+			<if test="adCostBudget != null">
+				and ad_cost_budget = #{adCostBudget}
+			</if>
+			
+			<if test="adStartTime != null">
+				 <![CDATA[and ad_start_time>=#{adStartTime,jdbcType=TIMESTAMP} ]]>
+			</if>
+			
+			<if test="adStartEnd != null">
+				<![CDATA[and ad_start_time<=#{adStartEnd,jdbcType=TIMESTAMP} ]]>
+			</if>
+			
+			<if test="adEndTime != null">
+				<![CDATA[and ad_end_time>=#{adEndTime,jdbcType=TIMESTAMP} ]]>
+			</if>
+			
+			<if test="adEndEnd != null">
+			<![CDATA[and ad_end_time<=#{adEndEnd,jdbcType=TIMESTAMP} ]]>
+			</if>
+			
+			<if test="adEndEnd != null">
+			<![CDATA[and ad_end_time<=#{adEndEnd,jdbcType=TIMESTAMP} ]]>
+			</if>			
+			
+		</where>
+	</select> 
+
+	<!-- 获取广告集 -->
+	<select id="advertList" resultType="_advert" parameterType="_advert">
+		
+		select 
+			ad_id  adId,
+			ad_name adName,
+			(select dic_value from tsied_sys_dic where id = ad_status) adStatus,
+			(select dic_value from tsied_sys_dic where id = ad_project) adProject,
+			(select dic_value from tsied_sys_dic where id = ad_type) adType,
+			ad_addr adAddr,
+			ad_domain adDomain,
+			(select dic_value from tsied_sys_dic where id = ad_social_software) adSocialSoftware,
+			ad_cost_budget adCostBudget,
+			ad_start_time adStartTime,
+			ad_end_time adEndTime
+		from tsied_advert
+		<where>
+		    1 = 1
+		    <if test="adId != null">
+				and ad_id = #{adId}
+			</if>
+		    
+			<if test="adName != null">
+				and ad_name = #{adName}
+			</if>
+			<if test="adStatus != null and adStatus!=0">
+				and ad_status = #{adStatus}
+			</if>
+			<if test="adProject != null and adProject!=0">
+				and ad_project = #{adProject}
+			</if>
+			<if test="adType != null and adType!=0">
+				and ad_type = #{adType}
+			</if>
+			<if test="adAddr != null">
+				and ad_addr = #{adAddr}
+			</if>
+			<if test="adSocialSoftware != null and adSocialSoftware!=0">
+				and ad_social_software = #{adSocialSoftware}
+			</if>
+			<if test="adCostBudget != null">
+				and ad_cost_budget = #{adCostBudget}
+			</if>
+			
+			<if test="adStartTime != null">
+				 <![CDATA[and ad_start_time>=#{adStartTime,jdbcType=TIMESTAMP} ]]>
+			</if>
+			
+			<if test="adStartEnd != null">
+				<![CDATA[and ad_start_time<=#{adStartEnd,jdbcType=TIMESTAMP} ]]>
+			</if>
+			
+			<if test="adEndTime != null">
+				<![CDATA[and ad_end_time>=#{adEndTime,jdbcType=TIMESTAMP} ]]>
+			</if>
+			
+			<if test="adEndEnd != null">
+			<![CDATA[and ad_end_time<=#{adEndEnd,jdbcType=TIMESTAMP} ]]>
+			</if>
+			
+			<if test="adEndEnd != null">
+			<![CDATA[and ad_end_time<=#{adEndEnd,jdbcType=TIMESTAMP} ]]>
+			</if>		
+			
+			limit #{offset,jdbcType=TIMESTAMP},#{pageSize,jdbcType=TIMESTAMP};	
+			
+		</where>
+	</select>
+   
+   <!-- 获取广告-->
+	<select id="findAdvert" resultType="_advert" parameterType="_advert">
+		select 
+			ad_id adId,
+			ad_name adName,
+			ad_status adStatus,
+			ad_project adProject,
+			ad_type adType,
+			ad_addr adAddr,
+			ad_domain adDomain,
+			ad_social_software adSocialSoftware,
+			ad_cost_budget adCostBudget,
+			ad_start_time adStartTime,
+			ad_end_time adEndTime
+		from tsied_advert
+		<where>
+		    1 = 1
+		     <if test="adId != null">
+				and ad_id = #{adId}
+			</if>
+			<if test="adName != null">
+				and ad_name = #{adName}
+			</if>
+			<if test="adStatus != null">
+				and ad_status = #{adStatus}
+			</if>
+			<if test="adProject != null">
+				and ad_project = #{adProject}
+			</if>
+			<if test="adType != null">
+				and ad_type = #{adType}
+			</if>
+			<if test="adAddr != null">
+				and ad_addr = #{adAddr}
+			</if>
+			<if test="adSocialSoftware != null">
+				and ad_social_software = #{adSocialSoftware}
+			</if>
+			<if test="adCostBudget != null">
+				and ad_cost_budget = #{adCostBudget}
+			</if>
+			
+			<if test="adStartTime != null">
+				  <![CDATA[   and DATE_FORMAT(ad_start_time, '%Y-%m-%d')>=  DATE_FORMAT(#{adStartTime}, '%Y-%m-%d')   ]]>
+			</if>
+			
+			<if test="adStartEnd != null">
+				<![CDATA[   and DATE_FORMAT(ad_start_time, '%Y-%m-%d')<=  DATE_FORMAT(#{adStartEnd}, '%Y-%m-%d')   ]]>
+			</if>
+			
+			<if test="adEndTime != null">
+				<![CDATA[   and DATE_FORMAT(ad_end_time, '%Y-%m-%d')>=  DATE_FORMAT(#{adEndTime}, '%Y-%m-%d')   ]]>
+			</if>
+			
+			<if test="adEndEnd != null">
+				<![CDATA[   and DATE_FORMAT(ad_end_time, '%Y-%m-%d')<=  DATE_FORMAT(#{adEndEnd}, '%Y-%m-%d')   ]]>
+			</if>
+			
+		</where>
+	</select>
+	
+	<!-- 保存广告 -->
+	<insert id="saveAdvert" parameterType="_advert">
+		insert into  tsied_advert 
+		(
+			 ad_name,
+		  	 ad_status,
+		 	 ad_project,
+		  	 ad_type,
+		  	 ad_addr,
+		  	 ad_domain,
+		  	 ad_social_software,
+		  	 ad_cost_budget,
+		  	 ad_start_time,
+		  	 ad_end_time
+		)
+		values(
+			#{adName},
+			#{adStatus},
+			#{adProject},
+			#{adType},
+			#{adAddr},
+			#{adDomain},
+			#{adSocialSoftware},
+			#{adCostBudget},
+			#{adStartTime,jdbcType=DATE},
+			#{adEndTime,jdbcType=DATE}
+		)
+	</insert>
+	
+	<!-- 修改广告 -->
+	<update id="modifyAdvert" parameterType="_advert">
+		update tsied_advert set
+		ad_name = #{adName},
+		ad_status = #{adStatus},
+		ad_project = #{adProject},
+		ad_type = #{adType},
+		ad_addr = #{adAddr},
+		ad_domain = #{adDomain},
+		ad_social_software = #{adSocialSoftware},
+		ad_cost_budget = #{adCostBudget},
+		ad_start_time = #{adStartTime,jdbcType=DATE},
+		ad_end_time = #{adEndTime,jdbcType=DATE}
+		<where>
+			1 = 1
+		     <if test="adId != null">
+				and ad_id = #{adId}
+			</if>
+	   </where>
+	</update>
+	
+	<!-- 删除广告 -->
+	<delete id="delAdvert" parameterType="_advert">
+		delete from tsied_advert where ad_id = #{adId}
+	</delete>
+ </mapper>

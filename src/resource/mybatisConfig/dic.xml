@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+ 
+ 
+ <mapper namespace="com.elk.entity.Dic">
+
+	<!-- 字典表 -->
+	<select id="dicList" resultType="_dic" parameterType="java.lang.String">
+	
+		select 
+			t.id dicId,
+			t.dic_key dicKey,
+			t.dic_value dicValue
+		from tsied_sys_dic t 
+			<where>
+			 	1 = 1
+			 		<choose>
+			 			<when test="value != null">
+							 and t.dic_key in (#{value},'all')
+			 			</when>
+			 			<otherwise>
+			 				and t.dic_key in ('all')
+			 			</otherwise>
+			 		</choose>
+			</where>
+	
+	</select>
+   
+ </mapper>

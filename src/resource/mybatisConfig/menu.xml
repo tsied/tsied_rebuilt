@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+ 
+ 
+ <mapper namespace="com.elk.entity.Menu">
+
+	<!-- 根据用户名获取菜单 -->
+	<select id="menuList" resultType="_Menu" parameterType="_user">
+	
+		select 
+			a.mid id,
+			a.menu_name menuName,
+			a.parent_id parentId,
+			a.menu_link menuLink
+		from tsied_sys_menu  a 
+			left join  
+		tsied_sys_user_role_mapper b 
+			on a.mid = b.mid  
+			right join 
+			tsied_sys_user c 
+			on  b.uid = c.uid 
+			<where>
+				<if test="uName != null">
+				and c.user_name ='${uName}'
+				</if>
+			</where>
+	
+	</select>
+   
+ </mapper>

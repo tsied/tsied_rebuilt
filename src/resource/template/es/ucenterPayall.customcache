@@ -1,0 +1,59 @@
+{
+  "query": {
+    "filtered": {
+      "query": {
+        "query_string": {
+          "query": "_exists_:XingYuMoney",
+          "analyze_wildcard": true
+        }
+      },
+      "filter": {
+        "bool": {
+          "must": [
+            {
+              "query": {
+                "query_string": {
+                  "analyze_wildcard": true,
+                  "query": "*"
+                }
+              }
+            },
+            {
+              "range": {
+                "@timestamp": {
+                  "gte": 1455782603778,
+                  "lte": 1457597003778,
+                  "format": "epoch_millis"
+                }
+              }
+            }
+          ],
+          "must_not": []
+        }
+      }
+    }
+  },
+  "size": 0,
+  "aggs": {
+    "2": {
+      "date_histogram": {
+        "field": "@timestamp",
+        "interval": "1d",
+        "time_zone": "Asia/Jakarta",
+        "min_doc_count": 1,
+        "extended_bounds": {
+          "min": 1455782603775,
+          "max": 1457597003775
+        }
+      },
+      "aggs": {
+        "1": {
+          "sum": {
+            "script": "doc['XingYuMoney'].value",
+            "lang": "expression"
+          }
+        }
+      }
+    }
+  }
+}
