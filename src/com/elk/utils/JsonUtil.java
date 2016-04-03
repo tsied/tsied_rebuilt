@@ -64,7 +64,7 @@ public class JsonUtil {
 						}
 
 					}
-
+					break;
 				case "date_histogram":
 					DateHistogramBuilder dateTermsBuilder = null;
 					String interval = jsonNode.get("date_histogram").get("interval").textValue();

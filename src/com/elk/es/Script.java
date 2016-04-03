@@ -11,7 +11,7 @@ public class Script {
 	
 	private String advertAddr;//广告地址
 	
-	private String dateRang;
+	private String dateRange;
 	
 	public Script(String indexName,String indexType,long startTime,long endTime,String advertAddr){
 		this.indexName = indexName;
@@ -28,11 +28,11 @@ public class Script {
 		this.endTime = endTime;
 	}
 	
-	public String getDateRang() {
-		return dateRang;
+	public String getDateRange() {
+		return dateRange;
 	}
-	public void setDateRang(String dateRang) {
-		this.dateRang = dateRang;
+	public void setDateRange(String dateRange) {
+		this.dateRange = dateRange;
 	}
 	public String getIndexName() {
 		return indexName;

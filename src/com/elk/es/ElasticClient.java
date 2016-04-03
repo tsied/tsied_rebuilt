@@ -116,8 +116,8 @@ public class ElasticClient {
 				if (jSONObject.getJSONObject("range") != null) {
 					@SuppressWarnings("unchecked")
 					Map<String,String>   timestampMap = mapper.readValue(jSONObject.getJSONObject("range").toJSONString(), Map.class);
-					for (String object : timestampMap.keySet()) {
-						script.setDateRang(object);
+					for (String dateRange : timestampMap.keySet()) {
+						script.setDateRange(dateRange);
 					}
 				}
 
@@ -153,8 +153,8 @@ public class ElasticClient {
 		String templatePath = Thread.currentThread().getContextClassLoader().getResource("resource/template/es").getPath()+"/flow-analysis.customcache";
 		String content = esClient.readFile(templatePath);
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		Script script = new Script("all_stats","ap_main_site",Long.parseLong("1451577600000"),Long.parseLong("1483199999999"),"zqzm.sinyugame.com");
-		script.setDateRang("@timestamp");
+		Script script = new Script("all_stats","ap_main_site",Long.parseLong("1451577600000"),Long.parseLong("1483199999999"),"/static/js/server.js");
+		script.setDateRange("@timestamp");
 		long startTime = format.parse("2016-03-01").getTime() / 1;
 		//long endTime   = format.parse("2016-03-31").getTime() / 1;
 		System.out.println(startTime +"---------------------------"+DateUtils.getTime(format.parse("2016-03-01")));

@@ -3,8 +3,8 @@
     "filtered": {
       "query": {
         "query_string": {
-          "query": "*",
-          "analyze_wildcard": true
+          "analyze_wildcard": true,
+          "query": "*"
         }
       },
       "filter": {
@@ -14,13 +14,10 @@
               "query": {
                 "match": {
                   "source_url.raw": {
-                    "query": "zqzm.sinyugame.com",
+                    "query": "/static/js/server.js",
                     "type": "phrase"
                   }
                 }
-              },
-              "$state": {
-                "store": "appState"
               }
             },
             {
@@ -52,34 +49,55 @@
         }
       },
       "aggs": {
-        "1": {
-          "sum": {
-            "field": "pv"
-          }
-        },
-        "3": {
-          "sum": {
-            "field": "uv"
-          }
-        },
-        "4": {
-          "sum": {
-            "field": "ipStats"
-          }
-        },
-        "5": {
-          "sum": {
-            "field": "sessionStat"
-          }
-        },
-        "9": {
-          "sum": {
-            "field": "exitSessionCount"
-          }
-        },
-        "10": {
-          "sum": {
-            "field": "bounceSessionCount"
+        "8": {
+          "terms": {
+            "field": "source_url.raw",
+            "size": 0,
+            "order": {
+              "1": "desc"
+            }
+          },
+          "aggs": {
+            "1": {
+              "sum": {
+                "field": "pv"
+              }
+            },
+            "3": {
+              "sum": {
+                "field": "uv"
+              }
+            },
+            "4": {
+              "sum": {
+                "field": "ipStats"
+              }
+            },
+            "5": {
+              "sum": {
+                "field": "sessionStat"
+              }
+            },
+            "6": {
+              "sum": {
+                "field": "exitSessionCount"
+              }
+            },
+            "7": {
+              "sum": {
+                "field": "bounceSessionCount"
+              }
+            },
+            "9": {
+              "avg": {
+                "field": "sessionTime"
+              }
+            },
+            "10": {
+              "avg": {
+                "field": "reqPages"
+              }
+            }
           }
         }
       }
