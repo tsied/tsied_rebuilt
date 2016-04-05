@@ -318,31 +318,31 @@
 										</span>
 									</div>
 								</div>
-								<div class="form-group">
+								<%-- <div class="form-group">
 									<label class="col-xs-12 col-sm-3 control-label">开始后时间 从</label>
 									<div class="col-xs-12 col-sm-5" style="padding-left: 0;">
 										<span class="block input-icon input-icon-right">
 											<div class="col-xs-5 col-sm-4">
 												<div class="input-group">
-													<input type="text" name="startDay" value="${startDay }" class="form-control" maxlength="2">
+													<input type="text" name="startDay" value="${startDay}" class="form-control" maxlength="2">
 												</div>
 											</div>
 											<div style="float: left; width: 92px; text-align: center; line-height: 32px;">到</div>
 											<div class="col-xs-5 col-sm-4">
 												<div class="input-group">
-													<input type="text" name="endDay" value="${endDay }" class="form-control" maxlength="2">
+													<input type="text" name="endDay" value="${endDay}" class="form-control" maxlength="2">
 													</div></div>
 													<div style="float: left; width: 92px; text-align: center; line-height: 32px;">(天)</div>
 										</span>
 									</div>
-								</div>
+								</div> --%>
 								<div class="form-group">
 									<label class="col-xs-12 col-sm-3 control-label">时间周期 从</label>
 									<div class="col-xs-12 col-sm-5" style="padding-left: 0;">
 										<span class="block input-icon input-icon-right">
 											<div class="col-xs-5 col-sm-5">
 												<div class="input-group">
-													<input type="text" name="startDate" value="${startDate }"
+													<input type="text" id="adStartTime" name="adStartTime" value="${adStartTime}"
 														class="form-control form-start" readonly="readonly">
 													<span class="input-group-addon" style="cursor: pointer;">
 														<i class="fa fa-calendar bigger-110"></i>
@@ -353,7 +353,7 @@
 												style="float: left; width: 92px; text-align: center; line-height: 32px;">到</div>
 											<div class="col-xs-5 col-sm-5" style="padding: 0;">
 												<div class="input-group">
-													<input type="text" name="endDate" value="${ endDate}"
+													<input type="text" id="adEndTime" name="adEndTime" value="${adEndTime}"
 														class="form-control form-end" readonly="readonly">
 													<span class="input-group-addon" style="cursor: pointer;">
 														<i class="fa fa-calendar bigger-110"></i>
@@ -386,10 +386,10 @@
 							class="table table-striped table-bordered table-hover table-gameManager">
 							<thead>
 								<tr>
-									<th>点击量</th>
+									<%--<th>点击量</th>--%>
 									<th>独立访问用户</th>
 									<th class="hidden-480">独立IP访问量</th>
-									<th>目标页面点击量</th>
+									<%--<th>目标页面点击量</th>--%>
 									<th class="hidden-480">会话数</th>
 									<th class="hidden-70">平均会话浏览页</th>
 									<th class="hidden-70">平均会话时长</th>
@@ -399,10 +399,10 @@
 							<tbody>
 								<c:forEach items="${advertNumList}" var="advert">
 									<tr>
-										<td>${advert.clickNum}</td>
+										<%--<td>${advert.clickNum}</td>--%>
 										<td>${advert.userViewNum}</td>
 										<td>${advert.ipViewNum}</td>
-										<td>${advert.targetPageNum}</td>
+										<%--<td>${advert.targetPageNum}</td>--%>
 										<td>${advert.sessionNum}</td>
 										<td>${advert.avgSessionViewNum}</td>
 										<td>${advert.avgSessionDuration}</td>
@@ -424,10 +424,10 @@
 									<th>广告名称</th>
 									<th>广告开始时间</th>
 									<th class="hidden-480">所属项目</th>
-									<th>点击量(占比)</th>
+									<%--<th>点击量(占比)</th>--%>
 									<th class="hidden-480">独立访问用户(占比)</th>
 									<th class="hidden-70">独立IP访问量</th>
-									<th class="hidden-70">目标页面点击量</th>
+									<%--<th class="hidden-70">目标页面点击量</th>--%>
 									<th class="hidden-70">会话数</th>
 									<th class="hidden-70">平均会话浏览页（项目浏览页）</th>
 									<th class="hidden-70">平均会话时常（项目平均会话时长）</th>
@@ -435,17 +435,17 @@
 								</tr>
 							</thead>
 							<tbody>
-								<c:forEach items="${advertAssortList}" var="ssortAdvert">
+								<c:forEach items="${advertStatsList}" var="ssortAdvert">
 									<tr>
 										<td>${ssortAdvert.adName}</td>
 										<td><fmt:formatDate value="${ssortAdvert.adStartTime}" pattern="yyyy-MM-dd" /></td>
 										<td class="hidden-480">${ssortAdvert.adProject}</td>
-										<td><%-- ${ssortAdvert.clickNum} --%></td>
+										<%--<td> ${ssortAdvert.clickNum} </td>--%>
 										<td>${ssortAdvert.userViewNum}</td>
 										<td>${ssortAdvert.ipViewNum}</td>
-										<td><%-- ${ssortAdvert.targetPageNum} --%></td>
+										<%--<td> ${ssortAdvert.targetPageNum} </td>--%>
 										<td>${ssortAdvert.sessionNum}</td>
-										<td><%-- ${ssortAdvert.avgSessionViewNum} --%></td>
+										<td> ${ssortAdvert.avgSessionViewNum}</td>
 										<td>${ssortAdvert.avgSessionDuration}</td>
 										<td>${ssortAdvert.bounceRate}</td>
 									</tr>
@@ -456,25 +456,24 @@
 								<li class="prev disabled"><a href="#">共${page.pageTotal }页</a></li>
 								<li class="prev disabled"><a href="#">当前第${page.pageNo }页</a></li>
 								<c:if test="${page.haveFirst}">
-									<li><a href="<%= request.getContextPath()%>/flow/pageForm?page=pre&offset=${page.first }&adName=${adName}&adSatus=${adSatus}&adProject=${adProject}&adType=${adType}&startDate=${startDate}&endDate=${endDate}&startDay=${startDay}&endDay=${endDay}">首页</a></li>
 								</c:if>
 								<c:if test="${!page.haveFirst}">
 									<li class="prev disabled"><a href="#">首页</a></li>
 								</c:if>
 								<c:if test="${page.haveFirst}">
-									<li><a href="<%= request.getContextPath()%>/flow/pageForm?page=pre&offset=${page.pre }&adName=${adName}&adSatus=${adSatus}&adProject=${adProject}&adType=${adType}&startDate=${startDate}&endDate=${endDate}&startDay=${startDay}&endDay=${endDay}">上一页</a></li>
+									<li><a href="<%= request.getContextPath()%>/flow/pageForm?page=pre&offset=${page.pre }&adName=${adName}&adSatus=${adSatus}&adProject=${adProject}&adType=${adType}&adStartTime=${adStartTime}&adEndTime=${adEndTime}&startDay=${startDay}&endDay=${endDay}">上一页</a></li>
 								</c:if>
 								<c:if test="${!page.haveFirst}">
 									<li class="prev disabled"><a href="#">上一页</a></li>
 								</c:if>
 								<c:if test="${page.haveLast}">
-									<li><a href="<%= request.getContextPath()%>/flow/pageForm?page=next&offset=${page.next }&adName=${adName}&adSatus=${adSatus}&adProject=${adProject}&adType=${adType}&startDate=${startDate}&endDate=${endDate}&startDay=${startDay}&endDay=${endDay}">下一页</a></li>
+									<li><a href="<%= request.getContextPath()%>/flow/pageForm?page=next&offset=${page.next }&adName=${adName}&adSatus=${adSatus}&adProject=${adProject}&adType=${adType}&adStartTime=${adStartTime}&adEndTime=${adEndTime}&startDay=${startDay}&endDay=${endDay}">下一页</a></li>
 								</c:if>
 								<c:if test="${!page.haveLast}">
 									<li class="prev disabled"><a href="#">下一页</a></li>
 								</c:if>
 								<c:if test="${page.haveLast}">
-									<li><a href="<%= request.getContextPath()%>/flow/pageForm?page=pre&offset=${page.last }&adName=${adName}&adSatus=${adSatus}&adProject=${adProject}&adType=${adType}&startDate=${startDate}&endDate=${endDate}&startDay=${startDay}&endDay=${endDay}">尾页</a></li>
+									<li><a href="<%= request.getContextPath()%>/flow/pageForm?page=pre&offset=${page.last }&adName=${adName}&adSatus=${adSatus}&adProject=${adProject}&adType=${adType}&adStartTime=${adStartTime}&adEndTime=${adEndTime}&startDay=${startDay}&endDay=${endDay}">尾页</a></li>
 								</c:if>
 								<c:if test="${!page.haveLast}">
 									<li class="prev disabled"><a href="#">尾页</a></li>

@@ -1,0 +1,121 @@
+{
+  "query": {
+    "filtered": {
+      "query": {
+        "query_string": {
+          "analyze_wildcard": true,
+          "query": "*"
+        }
+      },
+      "filter": {
+        "bool": {
+          "must": [
+            {
+              "range": {
+                "statsDate": {
+                  "gte": 1451577600000,
+                  "lte": 1483199999999,
+                  "format": "epoch_millis"
+                }
+              }
+            }
+          ],
+          "must_not": []
+        }
+      }
+    }
+  },
+  "size": 0,
+  "aggs": {
+    "source_url": {
+      "terms": {
+        "field": "source_url.raw",
+        "size": 0,
+        "order": {
+          "loginusercnt": "desc"
+        }
+      },
+      "aggs": {
+        "loginusercnt": {
+          "sum": {
+            "field": "loginusercnt"
+          }
+        },
+        "loginuserpaycnt": {
+          "sum": {
+            "field": "loginuserpaycnt"
+          }
+        },
+        "paycnt": {
+          "sum": {
+            "field": "paycnt"
+          }
+        },
+        "payusercnt": {
+          "sum": {
+            "field": "payusercnt"
+          }
+        },
+        "regusercnt": {
+          "sum": {
+            "field": "regusercnt"
+          }
+        },
+        "reguserpaycnt": {
+          "sum": {
+            "field": "reguserpaycnt"
+          }
+        },
+        "sdrate": {
+          "sum": {
+            "field": "sdrate"
+          }
+        },
+        "tdrate": {
+          "sum": {
+            "field": "tdrate"
+          }
+        },
+        "ydrate": {
+          "sum": {
+            "field": "ydrate"
+          }
+        },
+        "reguserpayargvcnt": {
+          "avg": {
+            "field": "reguserpaycnt"
+          }
+        },
+        "loginuserpayargvcnt": {
+          "avg": {
+            "field": "loginuserpaycnt"
+          }
+        },
+        "usepayrarpu": {
+          "sum": {
+            "script": "(doc['reguserpaycnt'].value + doc['loginuserpaycnt'].value)/doc['payusercnt'].value",
+            "lang": "expression"
+          }
+        },
+        "userpayargvcnt": {
+          "avg": {
+            "script": "doc['reguserpaycnt'].value + doc['loginuserpaycnt'].value",
+            "lang": "expression"
+          }
+        },
+        "userarpu": {
+          "sum": {
+            "script": "(doc['reguserpaycnt'].value + doc['loginuserpaycnt'].value)/(doc['regusercnt'].value + doc['loginusercnt'].value)",
+            "lang": "expression"
+          }
+        },
+        "userpaycnt": {
+          "sum": {
+            "script": "doc['reguserpaycnt'].value + doc['loginuserpaycnt'].value",
+            "lang": "expression"
+          }
+        }
+      }
+    }
+  }
+}

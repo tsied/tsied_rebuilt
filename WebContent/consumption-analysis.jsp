@@ -213,16 +213,16 @@
 								<div class="form-group">
 									<label class="col-xs-12 col-sm-3 control-label">所属项目</label>
 									<div class="col-xs-12 col-sm-5">
-										<span class="block input-icon input-icon-right"> 
-										<select name="adProject" class="number" id="adProject">
-											<c:forEach items="${proList}" var="pro" varStatus="status">
-												<c:if test="${adProject==null }">
-													<option value="${pro.dicId}">${pro.dicValue }</option>
-												</c:if>
-												<c:if test="${adProject!=null }">
-													<option <c:if test="${ adProject == pro.dicId}">selected</c:if>value="${pro.dicId}">${pro.dicValue }</option>
-												</c:if>
-											</c:forEach>
+										<span class="block input-icon input-icon-right"> <select
+											name="adProject" class="number" id="adProject">
+												<c:forEach items="${proList}" var="pro" varStatus="status">
+													<c:if test="${adProject==null }">
+														<option value="${pro.dicId}">${pro.dicValue }</option>
+													</c:if>
+													<c:if test="${adProject!=null }">
+														<option <c:if test="${ adProject == pro.dicId}">selected</c:if> value="${pro.dicId}">${pro.dicValue }</option>
+													</c:if>
+												</c:forEach>
 										</select>
 										</span>
 									</div>
@@ -286,7 +286,7 @@
 										<span class="block input-icon input-icon-right">
 											<div class="col-xs-5 col-sm-5">
 												<div class="input-group">
-													<input type="text" name="startDate" value="${startDate }" class="form-control form-start" readonly="readonly">
+													<input type="text" id="adStartTime" name="adStartTime" value="${adStartTime }" class="form-control form-start" readonly="readonly">
 													<span class="input-group-addon" style="cursor: pointer;">
 														<i class="fa fa-calendar bigger-110"></i>
 													</span>
@@ -296,7 +296,7 @@
 												style="float: left; width: 92px; text-align: center; line-height: 32px;">到</div>
 											<div class="col-xs-5 col-sm-5" style="padding: 0;">
 												<div class="input-group">
-													<input type="text" name="endDate" value="${ endDate}" class="form-control form-end" readonly="readonly">
+													<input type="text" id="adEndTime" name="adEndTime" value="${adEndTime}" class="form-control form-end" readonly="readonly">
 													<span class="input-group-addon" style="cursor: pointer;">
 														<i class="fa fa-calendar bigger-110"></i>
 													</span>
@@ -363,7 +363,7 @@
 										</tr>
 									</thead>
 									<tbody>
-										<c:forEach items="${advertAssortList}" var="ssortAdvert">
+										<c:forEach items="${advertStatsList}" var="ssortAdvert">
 											<tr>
 												<td>${ssortAdvert.adName}</td>
 												<td>${ssortAdvert.registerUsrConsumeAmount}</td>
@@ -382,25 +382,25 @@
 										<li class="prev disabled"><a href="#">共${page.pageTotal }页</a></li>
 										<li class="prev disabled"><a href="#">当前第${page.pageNo }页</a></li>
 										<c:if test="${page.haveFirst}">
-											<li><a href="<%= request.getContextPath()%>/consumption/pageForm?page=pre&offset=${page.first }&adName=${adName}&adSatus=${adSatus}&adProject=${adProject}&adType=${adType}&startDate=${startDate}&endDate=${endDate}&startDay=${startDay}&endDay=${endDay}">首页</a></li>
+											<li><a href="<%= request.getContextPath()%>/consumption/pageForm?page=pre&offset=${page.first }&adName=${adName}&adSatus=${adSatus}&adProject=${adProject}&adType=${adType}&adStartTime=${adStartTime}&adEndTime=${adEndTime}&startDay=${startDay}&endDay=${endDay}">首页</a></li>
 										</c:if>
 										<c:if test="${!page.haveFirst}">
 											<li class="prev disabled"><a href="#">首页</a></li>
 										</c:if>
 										<c:if test="${page.haveFirst}">
-											<li><a href="<%= request.getContextPath()%>/consumption/pageForm?page=pre&offset=${page.pre }&adName=${adName}&adSatus=${adSatus}&adProject=${adProject}&adType=${adType}&startDate=${startDate}&endDate=${endDate}&startDay=${startDay}&endDay=${endDay}">上一页</a></li>
+											<li><a href="<%= request.getContextPath()%>/consumption/pageForm?page=pre&offset=${page.pre }&adName=${adName}&adSatus=${adSatus}&adProject=${adProject}&adType=${adType}&adStartTime=${adStartTime}&adEndTime=${adEndTime}&startDay=${startDay}&endDay=${endDay}">上一页</a></li>
 										</c:if>
 										<c:if test="${!page.haveFirst}">
 											<li class="prev disabled"><a href="#">上一页</a></li>
 										</c:if>
 										<c:if test="${page.haveLast}">
-											<li><a href="<%= request.getContextPath()%>/consumption/pageForm?page=next&offset=${page.next }&adName=${adName}&adSatus=${adSatus}&adProject=${adProject}&adType=${adType}&startDate=${startDate}&endDate=${endDate}&startDay=${startDay}&endDay=${endDay}">下一页</a></li>
+											<li><a href="<%= request.getContextPath()%>/consumption/pageForm?page=next&offset=${page.next }&adName=${adName}&adSatus=${adSatus}&adProject=${adProject}&adType=${adType}&adStartTime=${adStartTime}&adEndTime=${adEndTime}&startDay=${startDay}&endDay=${endDay}">下一页</a></li>
 										</c:if>
 										<c:if test="${!page.haveLast}">
 											<li class="prev disabled"><a href="#">下一页</a></li>
 										</c:if>
 										<c:if test="${page.haveLast}">
-											<li><a href="<%= request.getContextPath()%>/consumption/pageForm?page=pre&offset=${page.last }&adName=${adName}&adSatus=${adSatus}&adProject=${adProject}&adType=${adType}&startDate=${startDate}&endDate=${endDate}&startDay=${startDay}&endDay=${endDay}">尾页</a></li>
+											<li><a href="<%= request.getContextPath()%>/consumption/pageForm?page=pre&offset=${page.last }&adName=${adName}&adSatus=${adSatus}&adProject=${adProject}&adType=${adType}&adStartTime=${adStartTime}&adEndTime=${adEndTime}&startDay=${startDay}&endDay=${endDay}">尾页</a></li>
 										</c:if>
 										<c:if test="${!page.haveLast}">
 											<li class="prev disabled"><a href="#">尾页</a></li>

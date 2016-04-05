@@ -321,5 +321,17 @@ public abstract class DateUtils {
         cal.add(DateField, num);
         return cal.getTime();
     }
+    
+    /**
+     * 获取当前日期的前一年
+     * @return
+     */
+    public static Date lastYear(){
+    	Calendar ca = Calendar.getInstance();
+		ca.setTime(new Date());
+		ca.add(Calendar.YEAR, -1);
+		Date lastYear = ca.getTime();
+		return lastYear;
+    }
 
 }

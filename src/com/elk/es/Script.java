@@ -19,8 +19,8 @@ public class Script {
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.advertAddr = advertAddr;
-		
 	}
+	
 	public Script(String indexName,String indexType,long startTime,long endTime){
 		this.indexName = indexName;
 		this.indexType = indexType;

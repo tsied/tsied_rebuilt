@@ -8,6 +8,8 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -24,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.elk.utils.DateUtils;
@@ -120,9 +121,7 @@ public class ElasticClient {
 						script.setDateRange(dateRange);
 					}
 				}
-
 			}
-			
 			HashMap<String, String> paramMap = new HashMap<String,String>();
 			paramMap.put("templateName", "script-body.ftl");
 			paramMap.put("data", mapper.writeValueAsString(script));
@@ -150,17 +149,24 @@ public class ElasticClient {
 	
 	public static void main(String[] args) throws ParseException {
 		ElasticClient esClient = new ElasticClient();
-		String templatePath = Thread.currentThread().getContextClassLoader().getResource("resource/template/es").getPath()+"/flow-analysis.customcache";
+		String templatePath = Thread.currentThread().getContextClassLoader().getResource("resource/template/es").getPath()+"/consumption-analysis.customcache";
 		String content = esClient.readFile(templatePath);
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		Script script = new Script("all_stats","ap_main_site",Long.parseLong("1451577600000"),Long.parseLong("1483199999999"),"/static/js/server.js");
-		script.setDateRange("@timestamp");
+		Script script = new Script("pay_stats","pay_test",Long.parseLong("1451577600000"),Long.parseLong("1483199999999"),"/static/js/server.js");
+		//script.setDateRange("@timestamp");
 		long startTime = format.parse("2016-03-01").getTime() / 1;
 		//long endTime   = format.parse("2016-03-31").getTime() / 1;
 		System.out.println(startTime +"---------------------------"+DateUtils.getTime(format.parse("2016-03-01")));
 		Map<String, String> resultMap = esClient.execQuery(content,script);
-		resultMap.put("templateName", "flow-analysis.ftl");
+		resultMap.put("templateName", "consumption-analysis.ftl");
 		String data = new TemplateUtil().formatData(resultMap);
 		System.out.println(data);
+		/*SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar ca = Calendar.getInstance();//得到一个Calendar的实例 
+		ca.setTime(new Date()); //设置时间为当前时间 
+		ca.add(Calendar.YEAR, -1); //年份减1 
+		Date lastMonth = ca.getTime();
+		System.out.println(DateUtils.formatDate(lastMonth));
+		System.out.println(DateUtils.getCurrentDate());*/
 	}
 }

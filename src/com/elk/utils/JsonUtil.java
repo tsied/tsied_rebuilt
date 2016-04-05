@@ -10,6 +10,7 @@ import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramBuild
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInterval;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
+import org.elasticsearch.search.aggregations.metrics.avg.AvgBuilder;
 import org.elasticsearch.search.aggregations.metrics.sum.SumBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,9 +53,7 @@ public class JsonUtil {
 						termsBuilder
 								.minDocCount(Long.parseLong(jsonNode.get("terms").get("min_doc_count").textValue()));
 					}
-					if (jsonNode.get("terms").get("order") != null) {
-						termsBuilder.order(Terms.Order.aggregation("1", false));
-					}
+					
 					aggsBuilder = termsBuilder;
 					if (jsonNode.get("aggs") != null) {
 						for (String str2 : JSON.parseObject(jsonNode.get("aggs").toString(),
@@ -124,8 +123,15 @@ public class JsonUtil {
 							.field(jsonNode.get("max").get("field").textValue());
 					break;
 				case "avg":
-					aggsBuilder = AggregationBuilders.avg(parentKey)
-							.field(jsonNode.get("avg").get("field").textValue());
+					AvgBuilder avgBuilder = AggregationBuilders.avg(parentKey);
+					if (jsonNode.get("avg").get("script") != null) {
+						String scripts = jsonNode.get("avg").get("script").textValue();
+						avgBuilder.script(new Script(scripts, ScriptType.INLINE, "expression", null));
+					}
+					if (jsonNode.get("avg").get("field") != null) {
+						avgBuilder.field(jsonNode.get("avg").get("field").textValue());
+					}
+					aggsBuilder = avgBuilder;
 					break;
 				case "cardinality":
 					aggsBuilder = AggregationBuilders.cardinality(parentKey).field(

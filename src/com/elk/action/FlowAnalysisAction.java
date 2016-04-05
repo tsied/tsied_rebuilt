@@ -1,19 +1,32 @@
 package com.elk.action;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.elk.entity.Advert;
+import com.elk.es.ElasticClient;
+import com.elk.es.Script;
+import com.elk.utils.DateUtils;
 import com.elk.utils.StringUtil;
 import com.elk.utils.StringUtils;
+import com.elk.utils.TemplateUtil;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 /**
  * @desc 流量分析
  * @author rock
@@ -23,38 +36,25 @@ import com.elk.utils.StringUtils;
 @RequestMapping("/flow")
 public class FlowAnalysisAction extends BaseAction{
 	
+	private static Logger log = LoggerFactory.getLogger(FlowAnalysisAction.class);
 	
 	@RequestMapping(value="/flow-analysis")
 	public String  index(HttpServletRequest request,HttpServletResponse response) throws IOException{
 		initPage(request,response);
 		int count = 0;
 		Advert advert = new Advert();
-		count = advertService.getAdvertCount(null);
+		advert.setAdStartTime(DateUtils.parseDate(DateUtils.formatDate(DateUtils.lastYear())));
+		advert.setAdEndTime(DateUtils.parseDate(DateUtils.formatDate(DateUtils.getCurrent())));
+		count = advertService.getAdvertCount(advert);
 		advert.setPageSize(10);
 		advert.setTotal(count);
 		advert.setCurrentTotal(count);
 		List<Advert> advertNumList = new ArrayList<Advert>();//合计及平均数值
-		
-		List<Advert> advertAssortList = advertService.getAdvertList(advert);//分类数值 //advertService.getAdvertList(advert);
-		
-		
-		Advert advert2 = new Advert();
-		advert2.setAdName("泰皇登基充值2折");
-		advert2.setAdStartTime(new Date());
-		advert2.setClickNum(5079);
-		advert2.setUserViewNum(10023);
-		advert2.setIpViewNum(12203);
-		advert2.setTargetPageNum(3402);
-		advert2.setSessionNum(13472);
-		advert2.setAvgSessionViewNum(19403);
-		advert2.setAvgSessionDuration("742159");
-		advert2.setBounceRate("23.5");
-		
-		advertAssortList.add(advert2);
-		
-		request.setAttribute("advertNumList", advertNumList);
-		request.setAttribute("advertAssortList", advertAssortList);
-		request.setAttribute("page", advert);//分页信息
+		List<Advert> advertAssortList = advertService.getAdvertList(advert);//获取广告信息
+		List<Advert> advertStatsList = new ArrayList<Advert>();//分类数值 
+		assembleAdvert(request, advert, advertNumList, advertAssortList, advertStatsList);
+		request.setAttribute("adStartTime", DateUtils.formatDate(DateUtils.lastYear()));
+		request.setAttribute("adEndTime",DateUtils.formatDate(DateUtils.getCurrent()));
 		return "flow-analysis";
 	}
 	
@@ -63,15 +63,14 @@ public class FlowAnalysisAction extends BaseAction{
 		initPage(request,response);
 		Advert advert = findAdvertTerms(request);
 		int count = 0;
-		//count = advertService.getAdvertCount(advert);
+		count = advertService.getAdvertCount(advert);
 		advert.setPageSize(10);
 		advert.setTotal(count);
 		advert.setCurrentTotal(count);
 		List<Advert> advertNumList = new ArrayList<Advert>();//合计及平均数值
-		List<Advert> advertAssortList = new ArrayList<Advert>();//分类数值 advertService.getAdvertList(advert);
-		request.setAttribute("advertNumList", advertNumList);
-		request.setAttribute("advertAssortList", advertAssortList);
-		request.setAttribute("page", advert);//分页信息
+		List<Advert> advertAssortList = advertService.getAdvertList(advert);//获取广告信息
+		List<Advert> advertStatsList = new ArrayList<Advert>();
+		assembleAdvert(request, advert, advertNumList, advertAssortList, advertStatsList);
 		return "flow-analysis";
 	}
 
@@ -81,23 +80,23 @@ public class FlowAnalysisAction extends BaseAction{
 		advert.setAdProject(request.getParameter("adProject"));
 		advert.setAdType(request.getParameter("adType"));
 		advert.setAdStatus(request.getParameter("adSatus"));
-		if(!StringUtils.isBlank(request.getParameter("startDay"))){
+		/*if(!StringUtils.isBlank(request.getParameter("startDay").toString())){
 			advert.setStartDay(Integer.parseInt(request.getParameter("startDay")));
 		}
-		if(StringUtils.isBlank(request.getParameter("endDay"))){
+		if(!StringUtils.isBlank(request.getParameter("endDay").toString())){
 			advert.setEndDay(Integer.parseInt(request.getParameter("endDay")));
-		}
-		advert.setStartDate(request.getParameter("startDate"));
-		advert.setEndDate(request.getParameter("endDate"));
+		}*/
+		advert.setAdStartTime(DateUtils.parseDate(request.getParameter("adStartTime")));
+		advert.setAdEndTime(DateUtils.parseDate(request.getParameter("adEndTime")));
 		
 		request.setAttribute("adName", request.getParameter("adName"));
 		request.setAttribute("adProject", request.getParameter("adProject"));
 		request.setAttribute("adType", request.getParameter("adType"));
 		request.setAttribute("adSatus", request.getParameter("adSatus"));
-		request.setAttribute("startDay", request.getParameter("startDay"));
-		request.setAttribute("endDay", request.getParameter("endDay"));
-		request.setAttribute("startDate", request.getParameter("startDate"));
-		request.setAttribute("endDate", request.getParameter("endDate"));
+		//request.setAttribute("startDay", request.getParameter("startDay"));
+		//request.setAttribute("endDay", request.getParameter("endDay"));
+		request.setAttribute("adStartTime", request.getParameter("adStartTime"));
+		request.setAttribute("adEndTime", request.getParameter("adEndTime"));
 		return advert;
 	}
 	
@@ -107,44 +106,78 @@ public class FlowAnalysisAction extends BaseAction{
 			int count = 0;
 			Advert advert = findAdvertTerms(request);
 			advert.setPageSize(10);
-			//count = advertService.getAdvertCount(advert);
+			count = advertService.getAdvertCount(advert);
 			if(!StringUtil.isBlank(request.getParameter("page"))){
 				advert.setOffset(Integer.parseInt(request.getParameter("offset")));
 			}
 			advert.setTotal(count);
 			advert.setCurrentTotal(count);			
 			List<Advert> advertNumList = new ArrayList<Advert>();//合计及平均数值
-			List<Advert> advertAssortList = new ArrayList<Advert>();//分类数值   //advertService.getAdvertList(advert);
-			Advert advert2 = new Advert();
-			advert2.setAdName("泰皇登基充值2折");
-			advert2.setAdStartTime(new Date());
-			advert2.setClickNum(5079);
-			advert2.setUserViewNum(10023);
-			advert2.setIpViewNum(12203);
-			advert2.setTargetPageNum(3402);
-			advert2.setSessionNum(13472);
-			advert2.setAvgSessionViewNum(19403);
-			advert2.setAvgSessionDuration("742159");
-			advert2.setBounceRate("23.5");
-			
-			
-			Advert advert1 = new Advert();
-			advert1.setAdName("泼水节充值8折");
-			advert1.setAdStartTime(new Date());
-			advert1.setClickNum(100);
-			advert1.setUserViewNum(102);
-			advert1.setIpViewNum(203);
-			advert1.setTargetPageNum(402);
-			advert1.setSessionNum(172);
-			advert1.setAvgSessionViewNum(1903);
-			advert1.setAvgSessionDuration("759");
-			advert1.setBounceRate("88.5");
-			advertAssortList.add(advert2);
-			advertAssortList.add(advert1);
-			
-			request.setAttribute("advertNumList", advertNumList);
-			request.setAttribute("advertAssortList", advertAssortList);
-			request.setAttribute("page", advert);//分页信息
+			List<Advert> advertAssortList = advertService.getAdvertList(advert);//分类数值 
+			List<Advert> advertStatsList = new ArrayList<Advert>();//分类数值 
+			assembleAdvert(request, advert, advertNumList, advertAssortList,advertStatsList);
 		return "ad";
+	}
+
+	private void assembleAdvert(HttpServletRequest request, Advert advert,
+			List<Advert> advertNumList, List<Advert> advertAssortList,
+			List<Advert> advertStatsList) throws IOException,
+			JsonParseException, JsonMappingException, JsonProcessingException {
+		int uvNum = 0;
+		int ipNum = 0;
+		int sessionNum = 0;
+		int avgViewNum = 0;
+		int sessionTime = 0;
+		double bounceRate = 0.00;
+		for (Advert ad : advertAssortList) {
+			String templatePath = Thread.currentThread().getContextClassLoader().getResource("resource/template/es").getPath()+"/flow-analysis.customcache";
+			String content = client.readFile(templatePath);
+			Script script = new Script("all_stats","ap_main_site",ad.getAdStartTime().getTime(),ad.getAdEndTime().getTime(),ad.getAdAddr());
+			Map<String, String> resultMap = client.execQuery(content,script);
+			resultMap.put("templateName", "flow-analysis.ftl");
+			String data = new TemplateUtil().formatData(resultMap);
+			@SuppressWarnings("unchecked")
+			Map<String,List<Map<String,Object>>> statsMap = mapper.readValue(data, Map.class);
+			for (String key : statsMap.keySet()) {
+				for(Map<String, Object> map:statsMap.get(key)){
+					JsonNode node = mapper.readTree(mapper.writeValueAsString(map));
+					String str = node.get("name").textValue();
+					String dataValue = node.get("data").toString().substring(1, node.get("data").toString().length()-1);
+					switch(str){
+						case "uv":ad.setUserViewNum("".equals(dataValue)?0:Integer.valueOf(dataValue));
+						uvNum += "".equals(dataValue)?0:Integer.valueOf(dataValue);
+						break;
+						case "ipStats":ad.setIpViewNum("".equals(dataValue)?0:Integer.valueOf(dataValue));
+						ipNum += "".equals(dataValue)?0:Integer.valueOf(dataValue);
+						break;
+						case "sessionStat":ad.setSessionNum("".equals(dataValue)?0:Integer.valueOf(dataValue));
+						sessionNum += "".equals(dataValue)?0:Integer.valueOf(dataValue);
+						break;
+						case "reqPages":ad.setAvgSessionViewNum("".equals(dataValue)?0:Integer.valueOf(dataValue));
+						avgViewNum += "".equals(dataValue)?0:Integer.valueOf(dataValue);
+						break;
+						case "sessionTime":ad.setAvgSessionDuration("".equals(dataValue)?"0":String.valueOf(Integer.valueOf(dataValue)/1000));
+						sessionTime += "".equals(dataValue)?0:Integer.valueOf(dataValue)/1000;
+						break;
+						case "bounceSessionCount":ad.setBounceRate("".equals(dataValue)?"0":dataValue);
+						bounceRate += "".equals(dataValue)?0:Integer.valueOf(dataValue);
+						break;
+					}
+				}
+			}
+			advertStatsList.add(ad);
+		}
+		
+		Advert advertStats = new Advert();
+		advertStats.setUserViewNum(uvNum);
+		advertStats.setIpViewNum(ipNum);
+		advertStats.setSessionNum(sessionNum);
+		advertStats.setAvgSessionViewNum(avgViewNum);
+		advertStats.setAvgSessionDuration(sessionTime == 0?"0":String.valueOf(sessionTime));
+		advertStats.setBounceRate(String.valueOf(bounceRate));
+		advertNumList.add(advertStats);
+		request.setAttribute("advertNumList", advertNumList);
+		request.setAttribute("advertStatsList", advertStatsList);
+		request.setAttribute("page", advert);//分页信息
 	}	
 }

@@ -14,7 +14,7 @@
               "query": {
                 "match": {
                   "source_url.raw": {
-                    "query": "/static/js/server.js",
+                    "query": "baidu.com",
                     "type": "phrase"
                   }
                 }
@@ -36,18 +36,6 @@
     }
   },
   "size": 0,
-  "aggs": {
-    "2": {
-      "date_histogram": {
-        "field": "statsDate",
-        "interval": "1d",
-        "time_zone": "Asia/Hong_Kong",
-        "min_doc_count": 1,
-        "extended_bounds": {
-          "min": 1451577600000,
-          "max": 1483199999999
-        }
-      },
       "aggs": {
         "8": {
           "terms": {
@@ -102,5 +90,4 @@
         }
       }
     }
-  }
 }

@@ -165,7 +165,7 @@ public class AdvertAction extends BaseAction{
 		}
 		if(!StringUtil.isBlank(request.getParameter("startTime"))){
 			request.setAttribute("startTime", request.getParameter("startTime"));
-			advert.setAdStartEnd(request.getParameter("startTime")!=null?DateUtils.parseDate(request.getParameter("startTime")):null);
+			advert.setAdStartTime(request.getParameter("startTime")!=null?DateUtils.parseDate(request.getParameter("startTime")):null);
 		}
 		if(!StringUtil.isBlank(request.getParameter("startEnd"))){
 			request.setAttribute("startEnd", request.getParameter("startEnd"));
