@@ -261,7 +261,7 @@
 										</span>
 									</div>
 								</div>
-								<div class="form-group">
+								<%-- <div class="form-group">
 									<label class="col-xs-12 col-sm-3 control-label">开始时间</label>
 									<div class="col-xs-12 col-sm-5" style="padding-left: 0;">
 										<span class="block input-icon input-icon-right">
@@ -279,7 +279,7 @@
 											<div class="col-xs-5 col-sm-2" style="line-height: 32px; height: 30px;">天</div>
 										</span>
 									</div>
-								</div>
+								</div> --%>
 								<div class="form-group">
 									<label class="col-xs-12 col-sm-3 control-label">时间周期 从</label>
 									<div class="col-xs-12 col-sm-5" style="padding-left: 0;">
