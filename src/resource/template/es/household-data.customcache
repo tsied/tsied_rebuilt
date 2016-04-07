@@ -1,0 +1,61 @@
+{
+    "query": {
+        "filtered": {
+            "query": {
+                "query_string": {
+                    "analyze_wildcard": true,
+                    "query": "*"
+                }
+            },
+            "filter": {
+                "bool": {
+                    "must": [
+                        {
+                            "query": {
+                                "match": {
+                                    "source_url.raw": {
+                                        "query": "baidu.com",
+                                        "type": "phrase"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "range": {
+                                "statsDate": {
+                                    "gte": 1451577600000,
+                                    "lte": 1483199999999,
+                                    "format": "epoch_millis"
+                                }
+                            }
+                        }
+                    ],
+                    "must_not": []
+                }
+            }
+        }
+    },
+    "size": 0,
+    "aggs": {
+        "1": {
+            "sum": {
+                "field": "pv"
+            }
+        },
+        "3": {
+            "sum": {
+                "field": "uv"
+            }
+        },
+        "4": {
+            "sum": {
+                "field": "ipStats"
+            }
+        },
+        "5": {
+            "sum": {
+                "field": "sessionStat"
+            }
+        }
+    }
+}
