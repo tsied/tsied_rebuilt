@@ -25,7 +25,9 @@
 			 			</otherwise>
 			 		</choose>
 			</where>
-	
 	</select>
    
+   	<select id="selectIndexType" resultType="java.lang.String" parameterType="java.lang.String">
+		select index_type from tsied_sys_dic where dic_value = #{value}
+	</select>
  </mapper>

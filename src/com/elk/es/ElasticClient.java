@@ -8,8 +8,6 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -149,16 +147,17 @@ public class ElasticClient {
 	
 	public static void main(String[] args) throws ParseException {
 		ElasticClient esClient = new ElasticClient();
-		String templatePath = Thread.currentThread().getContextClassLoader().getResource("resource/template/es").getPath()+"/consumption-analysis.customcache";
+		String templatePath = Thread.currentThread().getContextClassLoader().getResource("resource/template/es").getPath()+"/user-analysis.customcache";
 		String content = esClient.readFile(templatePath);
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		Script script = new Script("pay_stats","pay_test",Long.parseLong("1451577600000"),Long.parseLong("1483199999999"),"/static/js/server.js");
+		Script script = new Script("pay_stats","pay_test",Long.parseLong("1451577600000"),Long.parseLong("1483199999999"));
+		//Script script = new Script("pay_stats","pay_test",Long.parseLong("1451577600000"),Long.parseLong("1483199999999"),"/static/js/server.js");
 		//script.setDateRange("@timestamp");
-		long startTime = format.parse("2016-03-01").getTime() / 1;
+	//	long startTime = format.parse("2016-03-01").getTime() / 1;
 		//long endTime   = format.parse("2016-03-31").getTime() / 1;
-		System.out.println(startTime +"---------------------------"+DateUtils.getTime(format.parse("2016-03-01")));
+	//	System.out.println(startTime +"---------------------------"+DateUtils.getTime(format.parse("2016-03-01")));
 		Map<String, String> resultMap = esClient.execQuery(content,script);
-		resultMap.put("templateName", "consumption-analysis.ftl");
+		resultMap.put("templateName", "user-analysis.ftl");
 		String data = new TemplateUtil().formatData(resultMap);
 		System.out.println(data);
 		/*SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");

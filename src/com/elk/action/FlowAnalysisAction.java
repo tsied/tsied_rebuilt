@@ -1,10 +1,7 @@
 package com.elk.action;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -17,11 +14,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.elk.entity.Advert;
-import com.elk.es.ElasticClient;
 import com.elk.es.Script;
 import com.elk.utils.DateUtils;
 import com.elk.utils.StringUtil;
-import com.elk.utils.StringUtils;
 import com.elk.utils.TemplateUtil;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -129,10 +124,14 @@ public class FlowAnalysisAction extends BaseAction{
 		int avgViewNum = 0;
 		int sessionTime = 0;
 		double bounceRate = 0.00;
+		String indexType = "";
+		if(advert.getAdProject()!=null && !advert.getAdProject().equals("0")){
+			indexType = indexService.getIndexTypeByValue(advert.getAdProject());
+		}
 		for (Advert ad : advertAssortList) {
 			String templatePath = Thread.currentThread().getContextClassLoader().getResource("resource/template/es").getPath()+"/flow-analysis.customcache";
 			String content = client.readFile(templatePath);
-			Script script = new Script("all_stats","ap_main_site",ad.getAdStartTime().getTime(),ad.getAdEndTime().getTime(),ad.getAdAddr());
+			Script script = new Script("all_stats",indexType,ad.getAdStartTime().getTime(),ad.getAdEndTime().getTime(),ad.getAdAddr());
 			Map<String, String> resultMap = client.execQuery(content,script);
 			resultMap.put("templateName", "flow-analysis.ftl");
 			String data = new TemplateUtil().formatData(resultMap);

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -18,8 +19,15 @@ import com.elk.entity.CruxIndex;
 import com.elk.entity.MonthIndex;
 import com.elk.entity.WeekIndex;
 import com.elk.es.ElasticClient;
+import com.elk.es.Script;
 import com.elk.service.IIndexService;
+import com.elk.utils.DateUtils;
 import com.elk.utils.StringUtils;
+import com.elk.utils.TemplateUtil;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * @date 2016-03-23
@@ -38,61 +46,9 @@ public class UserAnalysisAction extends BaseAction{
 	@RequestMapping(value="/user-analysis")
 	public String  init(HttpServletRequest request,HttpServletResponse response) throws IOException{
 		initPage(request,response);
-		List<CruxIndex> cruxIndexList = new ArrayList<CruxIndex>();//关健指标合计数值
-		CruxIndex cruxIndex1 = new CruxIndex();
-		cruxIndex1.setRegisterUser(2210);
-		cruxIndex1.setAdProject("杏娱项目");
-		cruxIndex1.setLoginUserNum(2003);
-		cruxIndex1.setConsumeUserNum(215);
-		cruxIndex1.setConsumeUserCount(310);
-		cruxIndex1.setNextDayRetention(173);
-		cruxIndex1.setNextDayRetention(22);
-		cruxIndex1.setThrDaysRetention(97);
-		cruxIndex1.setSevenDaysRetention(67);
-		cruxIndexList.add(cruxIndex1);
 		
-		CruxIndex cruxIndex = new CruxIndex();
-		int count = 0;
-		//count = advertService.getAdvertCount(cruxIndex);
-		cruxIndex.setPageSize(10);
-		cruxIndex.setTotal(count);
-		cruxIndex.setCurrentTotal(count);
-		List<CruxIndex> cruxIndexAssortList = new ArrayList<CruxIndex>();//关健指标分类数值   //advertService.getAdvertList(cruxIndex);
-		
-		CruxIndex cruxIndex3 = new CruxIndex();
-		cruxIndex3.setAdName("测试广告1");
-		cruxIndex3.setAdStartDate(new Date());
-		cruxIndex3.setAdProject("杏娱项目");
-		cruxIndex3.setRegisterUser(19911);
-		cruxIndex3.setLoginUserNum(21);
-		cruxIndex3.setConsumeUserNum(77);
-		cruxIndex3.setConsumeUserCount(66);
-		cruxIndex3.setConsumeUserCount(33);
-		cruxIndex3.setNextDayRetention(83);
-		cruxIndex3.setThrDaysRetention(55);
-		cruxIndex3.setSevenDaysRetention(21);
-		
-		
-		CruxIndex cruxIndex2 = new CruxIndex();
-		cruxIndex2.setAdName("测试广告2");
-		cruxIndex2.setAdStartDate(new Date());
-		cruxIndex2.setAdProject("杏娱项目2");
-		cruxIndex2.setRegisterUser(19911);
-		cruxIndex2.setLoginUserNum(21);
-		cruxIndex2.setConsumeUserNum(77);
-		cruxIndex2.setConsumeUserCount(66);
-		cruxIndex2.setConsumeUserCount(33);
-		cruxIndex2.setNextDayRetention(83);
-		cruxIndex2.setThrDaysRetention(55);
-		cruxIndex2.setSevenDaysRetention(21);
-		
-		cruxIndexAssortList.add(cruxIndex3);
-		cruxIndexAssortList.add(cruxIndex3);
-		
-		
-		request.setAttribute("cruxIndexList", cruxIndexList);
-		request.setAttribute("cruxIndexAssortList", cruxIndexAssortList);
-		request.setAttribute("page", cruxIndex);//分页信息
+		Advert cruxIndex = new Advert();
+		getCruxIndexData(request, cruxIndex);
 		
 		List<WeekIndex> weekIndexList = new ArrayList<WeekIndex>();//周指标合计数值
 		List<WeekIndex> weekIndexAssortList = new ArrayList<WeekIndex>();//周指标分类数值
@@ -107,6 +63,85 @@ public class UserAnalysisAction extends BaseAction{
 		
 		return "user-analysis";
 	}
+
+	private void getCruxIndexData(HttpServletRequest request, Advert cruxIndex)
+			throws IOException, JsonParseException, JsonMappingException, JsonProcessingException {
+		int count = 0;
+		cruxIndex.setAdStartTime(DateUtils.parseDate(DateUtils.formatDate(DateUtils.lastYear())));
+		cruxIndex.setAdEndTime(DateUtils.parseDate(DateUtils.formatDate(DateUtils.getCurrent())));
+		count = advertService.getAdvertCount(cruxIndex);
+		cruxIndex.setPageSize(10);
+		cruxIndex.setTotal(count);
+		cruxIndex.setCurrentTotal(count);
+		List<Advert> advertStatsList = advertService.getAdvertList(cruxIndex);//关健指标分类数值
+		List<Advert> cruxIndexList = new ArrayList<Advert>();
+		List<Advert> cruxIndexStatsList = new ArrayList<Advert>();//分类数值 
+		int registerUsrNum = 0;
+		int loginUsrNum = 0;
+		int consumeUserNum = 0;
+		int consumeCount = 0;
+		double nextDayRetention = 0.00;
+		double thrdDaysRetention = 0.00;
+		double SevenDaysRetention = 0.00;
+		String indexType = "";
+		if(cruxIndex.getAdProject()!=null && !cruxIndex.getAdProject().equals("0")){
+			indexType = indexService.getIndexTypeByValue(cruxIndex.getAdProject());
+		}
+		for (Advert ad : advertStatsList) {
+			String templatePath = Thread.currentThread().getContextClassLoader().getResource("resource/template/es").getPath()+"/user-analysis.customcache";
+			String content = client.readFile(templatePath);
+			Script script = new Script("pay_stats",indexType,ad.getAdStartTime().getTime(),ad.getAdEndTime().getTime(),ad.getAdAddr());
+			Map<String, String> resultMap = client.execQuery(content,script);
+			resultMap.put("templateName", "user-analysis.ftl");
+			String data = new TemplateUtil().formatData(resultMap);
+			@SuppressWarnings("unchecked")
+			Map<String,List<Map<String,Object>>> statsMap = mapper.readValue(data, Map.class);
+			for (String key : statsMap.keySet()) {
+				for(Map<String, Object> map:statsMap.get(key)){
+					JsonNode node = mapper.readTree(mapper.writeValueAsString(map));
+					String str = node.get("name").textValue();
+					String dataValue = node.get("data").toString().substring(1, node.get("data").toString().length()-1);
+					switch(str){
+						case "regusercnt":ad.setRegisterUser("".equals(dataValue)?0:Integer.valueOf(dataValue));//注册用户数
+						registerUsrNum += "".equals(dataValue)?0:Integer.valueOf(dataValue);
+						break;
+						case "loginusercnt":ad.setLoginUserNum("".equals(dataValue)?0:Integer.valueOf(dataValue));//登录用户数
+						loginUsrNum += "".equals(dataValue)?0:Integer.valueOf(dataValue);
+						break;
+						case "payusercnt":ad.setConsumeUserNum("".equals(dataValue)?0:Integer.valueOf(dataValue));//消费用户数
+						consumeUserNum += "".equals(dataValue)?0:Integer.valueOf(dataValue);
+						break;
+						case "paycnt":ad.setConsumeUserCount("".equals(dataValue)?0:Integer.valueOf(dataValue));//消费次数
+						consumeCount += "".equals(dataValue)?0:Integer.valueOf(dataValue);
+						break;
+						case "ydrate":ad.setNextDayRetention("".equals(dataValue)?0:Double.valueOf(dataValue));//次日留存率
+						nextDayRetention += "".equals(dataValue)?0:Double.valueOf(dataValue);
+						break;
+						case "tdrate":ad.setThrDaysRetention("".equals(dataValue)?0:Double.valueOf(dataValue));//三日留存率
+						thrdDaysRetention += "".equals(dataValue)?0:Double.valueOf(dataValue);
+						break;
+						case "sdrate":ad.setSevenDaysRetention("".equals(dataValue)?0:Double.valueOf(dataValue));//七日留存率
+						SevenDaysRetention += "".equals(dataValue)?0:Double.valueOf(dataValue);
+						break;
+					}
+				}
+			}
+			cruxIndexList.add(ad);
+		}
+		
+		Advert advertStats = new Advert();
+		advertStats.setRegisterUser(registerUsrNum);
+		advertStats.setLoginUserNum(loginUsrNum);
+		advertStats.setConsumeUserNum(consumeUserNum);
+		advertStats.setConsumeUserCount(consumeCount);
+		advertStats.setNextDayRetention(nextDayRetention);
+		advertStats.setThrDaysRetention(thrdDaysRetention);
+		advertStats.setSevenDaysRetention(SevenDaysRetention);
+		cruxIndexStatsList.add(advertStats);
+		request.setAttribute("cruxIndexList", cruxIndexList);
+		request.setAttribute("cruxIndexStatsList", cruxIndexStatsList);
+		request.setAttribute("page", cruxIndex);//分页信息
+	}
 	
 	/**
 	 * 查找关健指标
@@ -118,25 +153,20 @@ public class UserAnalysisAction extends BaseAction{
 	@RequestMapping(value="/findCruxIndex")
 	public String findCruxIndex(HttpServletRequest request,HttpServletResponse response) throws IOException{
 		initPage(request,response);
-		CruxIndex cruxIndex = new CruxIndex();
+		Advert cruxIndex = new Advert();
 		cruxIndex.setAdName(request.getParameter("cruxAdName")!= null?request.getParameter("cruxAdName"):"");
 		cruxIndex.setAdProject(request.getParameter("cruxAdProject"));
 		cruxIndex.setAdType(request.getParameter("cruxAdType"));
 		cruxIndex.setAdStatus(request.getParameter("cruxAdSatus"));
-		if(!StringUtils.isBlank(request.getParameter("cruxStartDay"))){
+		/*if(!StringUtils.isBlank(request.getParameter("cruxStartDay"))){
 			cruxIndex.setStartDay(Integer.parseInt(request.getParameter("cruxStartDay")));
 		}
 		if(!StringUtils.isBlank(request.getParameter("cruxEndDay"))){
 			cruxIndex.setEndDay(Integer.parseInt(request.getParameter("cruxEndDay")));
-		}
-		cruxIndex.setStartDate(request.getParameter("cruxStartDate"));
-		cruxIndex.setEndDate(request.getParameter("cruxEndDate"));
-		
-		/**
-		 * query.........
-		 */
-		
-		
+		}*/
+		cruxIndex.setAdStartTime(DateUtils.parseDate(request.getParameter("cruxStartDate")));
+		cruxIndex.setAdEndTime(DateUtils.parseDate(request.getParameter("cruxEndDate")));
+		getCruxIndexData(request, cruxIndex);
 		request.setAttribute("cruxAdName",request.getParameter("cruxAdName"));
 		request.setAttribute("cruxAdProject", request.getParameter("cruxAdProject"));
 		request.setAttribute("cruxAdType", request.getParameter("cruxAdType"));
@@ -145,18 +175,6 @@ public class UserAnalysisAction extends BaseAction{
 		request.setAttribute("cruxEndDay", request.getParameter("cruxEndDay"));
 		request.setAttribute("cruxStartDate", request.getParameter("cruxStartDate"));
 		request.setAttribute("cruxEndDate", request.getParameter("cruxEndDate"));
-		
-		
-		int count = 0;
-		//count = advertService.getAdvertCount(cruxIndex);
-		cruxIndex.setPageSize(10);
-		cruxIndex.setTotal(count);
-		cruxIndex.setCurrentTotal(count);
-		
-		List<CruxIndex> cruxIndexList = new ArrayList<CruxIndex>();//关健指标合计数值
-		List<CruxIndex> cruxIndexAssortList = new ArrayList<CruxIndex>();//关健指标分类数值//advertService.getAdvertList(cruxIndex);
-		request.setAttribute("cruxIndexList", cruxIndexList);
-		request.setAttribute("cruxIndexAssortList", cruxIndexAssortList);
 		
 		List<WeekIndex> weekIndexList = new ArrayList<WeekIndex>();//周指标合计数值
 		List<WeekIndex> weekIndexAssortList = new ArrayList<WeekIndex>();//周指标分类数值
@@ -188,12 +206,12 @@ public class UserAnalysisAction extends BaseAction{
 		weekIndex.setAdType(request.getParameter("weekAdType"));
 		weekIndex.setAdStatus(request.getParameter("weekAdSatus"));
 		
-		if(!StringUtils.isBlank(request.getParameter("weekStartDay"))){
+		/*if(!StringUtils.isBlank(request.getParameter("weekStartDay"))){
 			weekIndex.setStartDay(Integer.parseInt(request.getParameter("weekStartDay")));
 		}
 		if(!StringUtils.isBlank(request.getParameter("weekEndDay"))){
 			weekIndex.setEndDay(Integer.parseInt(request.getParameter("weekEndDay")));
-		}
+		}*/
 		weekIndex.setStartDate(request.getParameter("weekStartDate"));
 		weekIndex.setEndDate(request.getParameter("weekEndDate"));
 		
@@ -207,12 +225,12 @@ public class UserAnalysisAction extends BaseAction{
 		request.setAttribute("weekStartDate", request.getParameter("weekStartDate"));
 		request.setAttribute("weekEndDate", request.getParameter("weekEndDate"));
 		
-		int count = 0;
+	/*	int count = 0;
 		//count = advertService.getAdvertCount(weekIndex);
 		weekIndex.setPageSize(10);
 		weekIndex.setTotal(count);
 		weekIndex.setCurrentTotal(count);
-		
+		*/
 		
 		List<CruxIndex> cruxIndexList = new ArrayList<CruxIndex>();//关健指标合计数值
 		List<CruxIndex> cruxIndexAssortList = new ArrayList<CruxIndex>();//关健指标分类数值
@@ -257,11 +275,11 @@ public class UserAnalysisAction extends BaseAction{
 		monthIndex.setStartDate(request.getParameter("monthStartDate"));
 		monthIndex.setEndDate(request.getParameter("monthEndDate"));
 		
-		int count = 0;
+	/*	int count = 0;
 		//count = advertService.getAdvertCount(weekIndex);
 		monthIndex.setPageSize(10);
 		monthIndex.setTotal(count);
-		monthIndex.setCurrentTotal(count);
+		monthIndex.setCurrentTotal(count);*/
 		
 		request.setAttribute("monthAdName", request.getParameter("monthAdName"));
 		request.setAttribute("monthAdProject", request.getParameter("monthAdProject"));
@@ -293,3 +311,4 @@ public class UserAnalysisAction extends BaseAction{
 	}
 	
 }
+

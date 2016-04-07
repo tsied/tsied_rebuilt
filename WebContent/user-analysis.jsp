@@ -300,7 +300,7 @@ jQuery(function($) {
 													</div>
 
 
-													<div class="form-group">
+													<%-- <div class="form-group">
 														<label class="col-xs-12 col-sm-3 control-label">开始后时间
 															从</label>
 														<div class="col-xs-12 col-sm-5" style="padding-left: 0;">
@@ -319,7 +319,7 @@ jQuery(function($) {
 																<div style="float: left; width: 92px; text-align: center; line-height: 32px;">天</div>
 															</span>
 														</div>
-													</div>
+													</div> --%>
 
 													<div class="form-group">
 														<label class="col-xs-12 col-sm-3 control-label">开始时间</label>
@@ -375,7 +375,7 @@ jQuery(function($) {
 														</tr>
 													</thead>
 													<tbody>
-														<c:forEach items="${cruxIndexList}" var="crux">
+														<c:forEach items="${cruxIndexStatsList}" var="crux">
 															<tr>
 																<td>${crux.registerUser}</td>
 																<td>${crux.loginUserNum}</td>
@@ -409,10 +409,10 @@ jQuery(function($) {
 															</tr>
 														</thead>
 														<tbody>
-															<c:forEach items="${cruxIndexAssortList}" var="crux">
+															<c:forEach items="${cruxIndexList}" var="crux">
 																<tr>
 																	<td>${crux.adName}</td>
-																	<td>${crux.adStartDate}</td>
+																	<td><fmt:formatDate value="${crux.adStartTime}" pattern="yyyy-MM-dd"/></td>
 																	<td class="hidden-480">${crux.adProject}</td>
 																	<td>${crux.registerUser}</td>
 																	<td>${crux.loginUserNum}</td>
@@ -520,7 +520,7 @@ jQuery(function($) {
 															</span>
 														</div>
 													</div>
-													<div class="form-group">
+													<%-- <div class="form-group">
 														<label class="col-xs-12 col-sm-3 control-label">开始后时间
 															从</label>
 														<div class="col-xs-12 col-sm-5" style="padding-left: 0;">
@@ -540,7 +540,7 @@ jQuery(function($) {
 																<div class="col-xs-5 col-sm-2" style="line-height: 32px; height: 30px;">天</div>
 															</span>
 														</div>
-													</div>
+													</div> --%>
 
 													<div class="form-group">
 														<label class="col-xs-12 col-sm-3 control-label">开始时间</label>

@@ -18,7 +18,7 @@
 							 <#list aggregations['2'].buckets as b>
 									<#if flag>,<#else>
 									<#assign flag=true/></#if>
-									${b['1'].value}
+									<#if b['1'].value??>${b['1'].value}<#else>0</#if>
 							 </#list>
 						]
 					},
@@ -29,7 +29,7 @@
 							 <#list aggregations['2'].buckets as b>
 									<#if flag1>,<#else>
 									<#assign flag1=true/></#if>
-									${b['3'].value}
+									<#if b['3'].value??>${b['3'].value}<#else>0</#if>
 							 </#list>
 						]
 					}

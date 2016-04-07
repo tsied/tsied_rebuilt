@@ -13,4 +13,5 @@ import com.elk.entity.User;
 public interface IIndexDao {
 	List<Menu> getMenuList(User user);
 	List<Dic>  getDicList(String dicKey);
+	String getIndexTypeByValue(String dicValue);
 }

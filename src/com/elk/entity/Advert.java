@@ -12,31 +12,57 @@ import com.elk.utils.PageSearchForm;
  */
 public class Advert extends PageSearchForm{
 	private Integer adId;//广告ID
+	
 	private String adName;//广告名称
+	
 	private String adStatus;//广告状态
+	
 	private String adProject;//所属项目
+	
 	private String adType;//广告类型
+	
 	private String adAddr;//广告地址
+	
 	private String adSocialSoftware;//社交软件
+	
 	private String adCostBudget;//成本预算
+	
 	private Date adStartTime;//开始时间
+	
 	private Date adStartEnd;//开始截止时间
+	
 	private Date adEndTime;//结束时间
+	
 	private Date adEndEnd;//结束截止时间
+	
 	private String adDomain;//投放域名
+	
 	private Integer startDay;//开始天数
+	
 	private Integer endDay;//结束天数
+	
 	private String startDate;//开始日期
+	
 	private String endDate;//结束日期
+	
 	private Integer clickNum;//点击量
+	
 	private Integer userViewNum;//独立访问用户
+	
 	private Integer ipViewNum;//独立IP访问量
+	
 	private Integer targetPageNum;//目标页面点击量
+	
 	private Integer sessionNum;//会话数
+	
 	private Integer avgSessionViewNum;//平均会话浏览页
+	
 	private String  avgSessionDuration;//平均会话时长
+	
 	private String  bounceRate;//跳出率百分比
+	
 	private Date adTime;//广告时间
+	
 	private Double  registerUsrConsumeAmount;//注册用户消费金额
 	
 	private Double registerUsrDayConsumeAmount;//注册用户日均消费金额
@@ -53,7 +79,103 @@ public class Advert extends PageSearchForm{
 	
 	private Double  longinUsrAvgAmount;//登录用户平均付费金额（ARPU）
 	
+	private Date adStartDate;//广告开始时间
 	
+	private Integer registerUser;//注册用户数
+	
+	private Integer loginUserNum;//登录用户数
+	
+	private Integer consumeUserNum;//消费用户数
+	
+	private Integer consumeUserCount;//用户消费次数
+	
+	private Double nextDayRetention;//次日留存率
+	
+	private Double thrDaysRetention;//3日留存率
+	
+	private Double sevenDaysRetention;//7日留存率
+	
+	private Integer loginUsrWeekCount;//周登录用户数
+	
+	private Integer consumeUsrWeekCount;//周消费用户数
+	
+	private Integer loginMonthCount;//月登录用户数
+	
+	private Integer consumeMonthCount;//月消费用户数
+	
+	
+	public Date getAdStartDate() {
+		return adStartDate;
+	}
+	public void setAdStartDate(Date adStartDate) {
+		this.adStartDate = adStartDate;
+	}
+	public Integer getRegisterUser() {
+		return registerUser;
+	}
+	public void setRegisterUser(Integer registerUser) {
+		this.registerUser = registerUser;
+	}
+	public Integer getLoginUserNum() {
+		return loginUserNum;
+	}
+	public void setLoginUserNum(Integer loginUserNum) {
+		this.loginUserNum = loginUserNum;
+	}
+	public Integer getConsumeUserNum() {
+		return consumeUserNum;
+	}
+	public void setConsumeUserNum(Integer consumeUserNum) {
+		this.consumeUserNum = consumeUserNum;
+	}
+	public Integer getConsumeUserCount() {
+		return consumeUserCount;
+	}
+	public void setConsumeUserCount(Integer consumeUserCount) {
+		this.consumeUserCount = consumeUserCount;
+	}
+	public Double getNextDayRetention() {
+		return nextDayRetention;
+	}
+	public void setNextDayRetention(Double nextDayRetention) {
+		this.nextDayRetention = nextDayRetention;
+	}
+	public Double getThrDaysRetention() {
+		return thrDaysRetention;
+	}
+	public void setThrDaysRetention(Double thrDaysRetention) {
+		this.thrDaysRetention = thrDaysRetention;
+	}
+	public Double getSevenDaysRetention() {
+		return sevenDaysRetention;
+	}
+	public void setSevenDaysRetention(Double sevenDaysRetention) {
+		this.sevenDaysRetention = sevenDaysRetention;
+	}
+	public Integer getLoginUsrWeekCount() {
+		return loginUsrWeekCount;
+	}
+	public void setLoginUsrWeekCount(Integer loginUsrWeekCount) {
+		this.loginUsrWeekCount = loginUsrWeekCount;
+	}
+	public Integer getConsumeUsrWeekCount() {
+		return consumeUsrWeekCount;
+	}
+	public void setConsumeUsrWeekCount(Integer consumeUsrWeekCount) {
+		this.consumeUsrWeekCount = consumeUsrWeekCount;
+	}
+	public Integer getLoginMonthCount() {
+		return loginMonthCount;
+	}
+	public void setLoginMonthCount(Integer loginMonthCount) {
+		this.loginMonthCount = loginMonthCount;
+	}
+	public Integer getConsumeMonthCount() {
+		return consumeMonthCount;
+	}
+	public void setConsumeMonthCount(Integer consumeMonthCount) {
+		this.consumeMonthCount = consumeMonthCount;
+	}
 	public Double getRegisterUsrDayConsumeAmount() {
 		return registerUsrDayConsumeAmount;
 	}

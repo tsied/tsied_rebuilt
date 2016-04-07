@@ -11,7 +11,7 @@
 						 <#list aggregations['source_url'].buckets as b>
 							<#if flag>,<#else>
 							<#assign flag=true/></#if>
-							${b['loginusercnt'].value}
+							<#if b['loginusercnt'].value??>${b['loginusercnt'].value}<#else>0</#if>
 						</#list>
 					]
 				},
@@ -23,7 +23,7 @@
 						<#list aggregations['source_url'].buckets as b>
 							<#if flag1>,<#else>
 							<#assign flag1=true/></#if>
-							${b['loginuserpaycnt'].value}
+							<#if b['loginuserpaycnt'].value??>${b['loginuserpaycnt'].value}<#else>0</#if>
 						</#list>
 					 ]
 				},
@@ -34,7 +34,7 @@
 								 <#list aggregations['source_url'].buckets as b>
 									<#if flag2>,<#else>
 									<#assign flag2=true/></#if>
-									${b['paycnt'].value}
+									<#if b['paycnt'].value??>${b['paycnt'].value}<#else>0</#if>
 								</#list>
 							]
 				},
@@ -45,7 +45,7 @@
 								 <#list aggregations['source_url'].buckets as b>
 									<#if flag3>,<#else>
 									<#assign flag3=true/></#if>
-									${b['payusercnt'].value}
+									<#if b['payusercnt'].value??>${b['payusercnt'].value}<#else>0</#if>
 								 </#list>
 							]
 				},
@@ -56,7 +56,7 @@
 							<#list aggregations['source_url'].buckets as b>
 								<#if flag4>,<#else>
 								<#assign flag4=true/></#if>
-								${b['regusercnt'].value}
+								<#if b['regusercnt'].value??>${b['regusercnt'].value}<#else>0</#if>
 							</#list>
 						]
 				},
@@ -67,7 +67,7 @@
 							 <#list aggregations['source_url'].buckets as b>
 								<#if flag5>,<#else>
 								<#assign flag5=true/></#if>
-								${b['reguserpaycnt'].value}
+								<#if b['reguserpaycnt'].value??>${b['reguserpaycnt'].value}<#else>0</#if>
 							</#list>
 						]
 				},
@@ -78,7 +78,7 @@
 							 <#list aggregations['source_url'].buckets as b>
 								<#if flag6>,<#else>
 								<#assign flag6=true/></#if>
-								${b['sdrate'].value}
+								<#if b['sdrate'].value??>${b['sdrate'].value}<#else>0</#if>
 							</#list>
 						]
 				},
@@ -89,7 +89,7 @@
 							 <#list aggregations['source_url'].buckets as b>
 								<#if flag7>,<#else>
 								<#assign flag7=true/></#if>
-								${b['tdrate'].value}
+								<#if b['tdrate'].value??>${b['tdrate'].value}<#else>0</#if>
 							</#list>
 						]
 				},
@@ -100,7 +100,7 @@
 							 <#list aggregations['source_url'].buckets as b>
 								<#if flag8>,<#else>
 								<#assign flag8=true/></#if>
-								${b['ydrate'].value}
+								<#if b['ydrate'].value??>${b['ydrate'].value}<#else>0</#if>
 							</#list>
 						]
 				},
@@ -111,7 +111,7 @@
 							 <#list aggregations['source_url'].buckets as b>
 								<#if flag9>,<#else>
 								<#assign flag9=true/></#if>
-								${b['reguserpayargvcnt'].value}
+								<#if b['reguserpayargvcnt'].value??>${b['reguserpayargvcnt'].value}<#else>0</#if>
 							</#list>
 						]
 				},
@@ -122,7 +122,7 @@
 							 <#list aggregations['source_url'].buckets as b>
 								<#if flag10>,<#else>
 								<#assign flag10=true/></#if>
-								${b['loginuserpayargvcnt'].value}
+								<#if b['loginuserpayargvcnt'].value??>${b['loginuserpayargvcnt'].value}<#else>0</#if>
 							</#list>
 						]
 				},
@@ -144,7 +144,7 @@
 							 <#list aggregations['source_url'].buckets as b>
 								<#if flag12>,<#else>
 								<#assign flag12=true/></#if>
-								${b['userpayargvcnt'].value}
+								<#if b['userpayargvcnt'].value??>${b['userpayargvcnt'].value}<#else>0</#if>
 							</#list>
 						]
 				},
@@ -166,7 +166,7 @@
 							 <#list aggregations['source_url'].buckets as b>
 								<#if flag14>,<#else>
 								<#assign flag14=true/></#if>
-								${b['userpaycnt'].value}
+								<#if b['userpaycnt'].value??>${b['userpaycnt'].value}<#else>0</#if>
 							</#list>
 						]
 				}

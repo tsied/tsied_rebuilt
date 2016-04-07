@@ -9,8 +9,16 @@ public class Dic {
 	private Integer dicId;//字典ID
 	private String dicKey;//字典KEY
 	private String dicValue;//字典VALUE
+	private String indexType;//Elasticsearch indextype
 	
-	
+	public String getIndexType() {
+		return indexType;
+	}
+
+	public void setIndexType(String indexType) {
+		this.indexType = indexType;
+	}
+
 	public String getDicKey() {
 		return dicKey;
 	}

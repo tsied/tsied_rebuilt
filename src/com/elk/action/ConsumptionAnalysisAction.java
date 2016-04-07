@@ -124,10 +124,14 @@ public class ConsumptionAnalysisAction extends BaseAction{
 		double consumeUsrDayAmount = 0;
 		double consumeUsrAvgAmount = 0;
 		double longinUsrAvgAmount = 0;
+		String indexType = "";
+		if(advert.getAdProject()!=null && !advert.getAdProject().equals("0")){
+			indexType = indexService.getIndexTypeByValue(advert.getAdProject());
+		}
 		for (Advert ad : advertAssortList) {
 			String templatePath = Thread.currentThread().getContextClassLoader().getResource("resource/template/es").getPath()+"/consumption-analysis.customcache";
 			String content = client.readFile(templatePath);
-			Script script = new Script("pay_stats","pay_test",ad.getAdStartTime().getTime(),ad.getAdEndTime().getTime(),ad.getAdAddr());
+			Script script = new Script("pay_stats",indexType,ad.getAdStartTime().getTime(),ad.getAdEndTime().getTime(),ad.getAdAddr());
 			Map<String, String> resultMap = client.execQuery(content,script);
 			resultMap.put("templateName", "consumption-analysis.ftl");
 			String data = new TemplateUtil().formatData(resultMap);

@@ -1,0 +1,77 @@
+{
+  "query": {
+    "filtered": {
+      "query": {
+        "query_string": {
+          "query": "*",
+          "analyze_wildcard": true
+        }
+      },
+      "filter": {
+        "bool": {
+          "must": [
+            {
+              "range": {
+                "statsDate": {
+                  "gte": 1451577600000,
+                  "lte": 1483199999999,
+                  "format": "epoch_millis"
+                }
+              }
+            }
+          ],
+          "must_not": []
+        }
+      }
+    }
+  },
+  "size": 0,
+  "aggs": {
+    "2": {
+      "terms": {
+        "field": "source_url.raw",
+        "size": 0,
+        "order": {
+          "1": "desc"
+        }
+      },
+      "aggs": {
+        "1": {
+          "sum": {
+            "field": "regusercnt"
+          }
+        },
+        "3": {
+          "sum": {
+            "field": "loginusercnt"
+          }
+        },
+        "4": {
+          "sum": {
+            "field": "payusercnt"
+          }
+        },
+        "5": {
+          "sum": {
+            "field": "paycnt"
+          }
+        },
+        "6": {
+          "sum": {
+            "field": "ydrate"
+          }
+        },
+        "7": {
+          "sum": {
+            "field": "tdrate"
+          }
+        },
+        "8": {
+          "sum": {
+            "field": "sdrate"
+          }
+        }
+      }
+    }
+  }
+}

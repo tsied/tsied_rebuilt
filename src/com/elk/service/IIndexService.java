@@ -13,4 +13,5 @@ import com.elk.entity.User;
 public interface IIndexService {
 	List<Menu> getMenuList(User user);//获取菜单栏
 	List<Dic> getDicList(String dicKey);//获取字典表
+	String getIndexTypeByValue(String dicValue);
 }
