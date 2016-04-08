@@ -135,9 +135,7 @@ public class ElasticClient {
 		    
 			srb.addAggregation(aggsBuilder);
 			sResponse = srb.execute().actionGet();
-			System.out.println(sResponse.toString());
 		} catch (Exception e) {
-			e.printStackTrace();
 			log.error(e.getMessage());
 		}
 		resultMap.put("data", sResponse.toString());
@@ -147,17 +145,17 @@ public class ElasticClient {
 	
 	public static void main(String[] args) throws ParseException {
 		ElasticClient esClient = new ElasticClient();
-		String templatePath = Thread.currentThread().getContextClassLoader().getResource("resource/template/es").getPath()+"/user-analysis.customcache";
+		String templatePath = Thread.currentThread().getContextClassLoader().getResource("resource/template/es").getPath()+"/register-user.customcache";
 		String content = esClient.readFile(templatePath);
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		Script script = new Script("pay_stats","pay_test",Long.parseLong("1451577600000"),Long.parseLong("1483199999999"));
+		Script script = new Script("pay_s","pay_game",Long.parseLong("1451577600000"),Long.parseLong("1483199999999"));
 		//Script script = new Script("pay_stats","pay_test",Long.parseLong("1451577600000"),Long.parseLong("1483199999999"),"/static/js/server.js");
 		//script.setDateRange("@timestamp");
 	//	long startTime = format.parse("2016-03-01").getTime() / 1;
 		//long endTime   = format.parse("2016-03-31").getTime() / 1;
 	//	System.out.println(startTime +"---------------------------"+DateUtils.getTime(format.parse("2016-03-01")));
 		Map<String, String> resultMap = esClient.execQuery(content,script);
-		resultMap.put("templateName", "user-analysis.ftl");
+		resultMap.put("templateName", "register-user.ftl");
 		String data = new TemplateUtil().formatData(resultMap);
 		System.out.println(data);
 		/*SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");

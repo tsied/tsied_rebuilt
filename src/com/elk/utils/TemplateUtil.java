@@ -28,10 +28,12 @@ public class TemplateUtil {
 	public String formatData(Map<String,String> paramMap){
 		ObjectMapper mapper = new ObjectMapper();
 		Configuration cfg = new Configuration();//init freemarker template
+		cfg.setDefaultEncoding("utf-8");
 		String result = null;
 		try{
 			cfg.setDirectoryForTemplateLoading(new File(Thread.currentThread().getContextClassLoader().getResource("").getPath()+"resource/template/freemarker")); // get template direction
 			Template temp = cfg.getTemplate(paramMap.get("templateName"));
+			temp.setEncoding("UTF-8");
 			Map<String, Object> map = new HashMap<String, Object>();
 			JsonNode goodsArray = mapper.readTree(paramMap.get("data"));
 			StringWriter sw = new StringWriter();

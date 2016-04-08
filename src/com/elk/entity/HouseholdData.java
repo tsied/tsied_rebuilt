@@ -6,7 +6,7 @@ package com.elk.entity;
  * @desc 门户咨询数据
  */
 public class HouseholdData {
-	private Integer userNum;//独立用户数
+	private Integer userViewNum;//独立用户数
 	private Integer ipViewNum;//独立IP访问量
 	private Integer pageViewNum;//页面浏览量（PV）
 	private Integer sessionNum;//会话数
@@ -14,11 +14,34 @@ public class HouseholdData {
 	private Double reviewRate;//回访率
 	private Integer registerUserNum;//结束日期注册用户总数
 	private Integer newRegisterUserNum;//新增注册用户数
-	public Integer getUserNum() {
-		return userNum;
+	private Integer bounceNum;//跳出率
+	private Integer avgSessionTime;//平均会话时长
+	private Integer reqPageNum;//平均每次会话浏览页数
+	
+	
+	public Integer getBounceNum() {
+		return bounceNum;
 	}
-	public void setUserNum(Integer userNum) {
-		this.userNum = userNum;
+	public void setBounceNum(Integer bounceNum) {
+		this.bounceNum = bounceNum;
+	}
+	public Integer getAvgSessionTime() {
+		return avgSessionTime;
+	}
+	public void setAvgSessionTime(Integer avgSessionTime) {
+		this.avgSessionTime = avgSessionTime;
+	}
+	public Integer getReqPageNum() {
+		return reqPageNum;
+	}
+	public void setReqPageNum(Integer reqPageNum) {
+		this.reqPageNum = reqPageNum;
+	}
+	public Integer getUserViewNum() {
+		return userViewNum;
+	}
+	public void setUserViewNum(Integer userViewNum) {
+		this.userViewNum = userViewNum;
 	}
 	public Integer getIpViewNum() {
 		return ipViewNum;

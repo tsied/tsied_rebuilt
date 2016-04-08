@@ -361,8 +361,9 @@ function houshold_data(a,b){
 											<th>独立IP访问量</th>
 											<th class="hidden-480">页面浏览量PV</th>
 											<th>会话数</th>
-											<th class="hidden-480">回访用户数</th>
-											<th class="hidden-70">回访率</th>
+											<th class="hidden-480">跳出率</th>
+											<th class="hidden-70">平均会话时长</th>
+											<th class="hidden-70">平均每次会话浏览页数</th>
 											<th class="hidden-70">结束日期注册用户总数</th>
 											<th class="hidden-70">新增注册用户数</th>
 										</tr>
@@ -370,12 +371,13 @@ function houshold_data(a,b){
 									<tbody>
 										<c:forEach items="${householdList}" var="household">
 											<tr>
-												<td>${household.userNum}</td>
+												<td>${household.userViewNum}</td>
 												<td>${household.ipViewNum}</td>
 												<td>${household.pageViewNum}</td>
 												<td>${household.sessionNum}</td>
-												<td>${household.reviewUserNum}</td>
-												<td>${household.reviewRate}</td>
+												<td>${household.bounceNum}</td>
+												<td>${household.avgSessionTime}</td>
+												<td>${household.reqPageNum}</td>
 												<td>${household.registerUserNum}</td>
 												<td>${household.newRegisterUserNum}</td>
 											</tr>

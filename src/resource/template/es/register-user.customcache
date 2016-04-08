@@ -1,10 +1,11 @@
 {
+  "size": 0,
   "query": {
     "filtered": {
       "query": {
         "query_string": {
-          "analyze_wildcard": true,
-          "query": "*"
+          "query": "*",
+          "analyze_wildcard": true
         }
       },
       "filter": {
@@ -25,9 +26,8 @@
       }
     }
   },
-  "size": 0,
   "aggs": {
-    "8": {
+    "2": {
       "date_histogram": {
         "field": "statsDate",
         "interval": "1d",
@@ -39,39 +39,14 @@
         }
       },
       "aggs": {
-        "pv_stats": {	
+        "1": {
           "sum": {
-            "field": "pv"
+            "field": "regusercnt"
           }
         },
-        "uv_stats": {
+        "3": {
           "sum": {
-            "field": "uv"
-          }
-        },
-        "ip_stats": {
-          "sum": {
-            "field": "ipStats"
-          }
-        },
-        "session_count": {
-          "sum": {
-            "field": "sessionStat"
-          }
-        },
-        "bounce_session_count": {
-          "sum": {
-            "field": "bounceSessionCount"
-          }
-        },
-        "avg_session_time": {
-          "avg": {
-            "field": "sessionTime"
-          }
-        },
-        "avg_req_page": {
-          "avg": {
-            "field": "reqPages"
+            "field": "sumregusercnt"
           }
         }
       }
