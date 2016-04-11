@@ -2,22 +2,19 @@ package com.elk.action;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.elk.entity.Advert;
-import com.elk.es.ElasticClient;
 import com.elk.es.Script;
-import com.elk.service.IIndexService;
 import com.elk.utils.DateUtils;
 import com.elk.utils.StringUtil;
 import com.elk.utils.StringUtils;
@@ -35,7 +32,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Controller
 @RequestMapping("/consumption")
 public class ConsumptionAnalysisAction extends BaseAction{
-	
+	private static Logger log = LoggerFactory.getLogger(ConsumptionAnalysisAction.class);
 	/**
 	 * 初始化
 	 * @param request

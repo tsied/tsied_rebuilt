@@ -8,20 +8,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.elk.entity.Advert;
 import com.elk.entity.HouseholdData;
 import com.elk.entity.ReportIndex;
-import com.elk.es.ElasticClient;
 import com.elk.es.Script;
-import com.elk.service.IIndexService;
 import com.elk.utils.DateUtils;
 import com.elk.utils.TemplateUtil;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -37,11 +34,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 @RequestMapping("/household")
 public class HouseHoldDataAction extends BaseAction{
 	
-	@Resource
-	private IIndexService indexService;
-	
-	@Autowired
-	private ElasticClient client;
+	private static Logger log = LoggerFactory.getLogger(HouseHoldDataAction.class);
 	
 	@RequestMapping(value="/household-data")
 	public String  init(HttpServletRequest request,HttpServletResponse response) throws JsonParseException, JsonMappingException, IOException, ParseException{

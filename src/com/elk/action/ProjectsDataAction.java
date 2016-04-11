@@ -6,18 +6,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.elk.entity.Advert;
-import com.elk.es.ElasticClient;
-import com.elk.service.IIndexService;
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
@@ -29,11 +27,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @RequestMapping("/project")
 public class ProjectsDataAction extends BaseAction{
 	
-	@Resource
-	private IIndexService indexService;
-	
-	@Autowired
-	private ElasticClient client;
+	private static Logger log = LoggerFactory.getLogger(ProjectsDataAction.class);
 	
 	/**
 	 * 初始化项目数据统计

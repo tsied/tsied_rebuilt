@@ -2,15 +2,14 @@ package com.elk.action;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -18,9 +17,7 @@ import com.elk.entity.Advert;
 import com.elk.entity.CruxIndex;
 import com.elk.entity.MonthIndex;
 import com.elk.entity.WeekIndex;
-import com.elk.es.ElasticClient;
 import com.elk.es.Script;
-import com.elk.service.IIndexService;
 import com.elk.utils.DateUtils;
 import com.elk.utils.StringUtils;
 import com.elk.utils.TemplateUtil;
@@ -37,11 +34,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Controller
 @RequestMapping("/user")
 public class UserAnalysisAction extends BaseAction{
-	@Resource
-	private IIndexService indexService;
-	
-	@Autowired
-	private ElasticClient client;
+	private static Logger log = LoggerFactory.getLogger(UserAnalysisAction.class);
 	
 	@RequestMapping(value="/user-analysis")
 	public String  init(HttpServletRequest request,HttpServletResponse response) throws IOException{
