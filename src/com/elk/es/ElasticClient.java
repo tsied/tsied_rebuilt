@@ -1,32 +1,27 @@
 package com.elk.es;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.elk.utils.DateUtils;
 import com.elk.utils.JsonUtil;
 import com.elk.utils.StringUtil;
 import com.elk.utils.TemplateUtil;
@@ -41,16 +36,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public class ElasticClient {
 
-	private static TransportClient client = null;
+	//private static TransportClient client = null;
 
 	private static Logger log = LoggerFactory.getLogger(ElasticClient.class);
 	
-	
+	@Autowired
+    private ElasticsearchTemplate elasticsearchTemplate;
 	/**
 	 * init client instance
 	 * @return
 	 */
-	public  ElasticClient() {
+	/*public  ElasticClient() {
 		try {
 			InputStream in = new BufferedInputStream (new FileInputStream(Thread.currentThread().getContextClassLoader().getResource("").getPath()+"/resource/esConfig.properties"));
 			Properties properties = new Properties();
@@ -60,17 +56,17 @@ public class ElasticClient {
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}
-	}
+	}*/
 
 	/**
 	 * close client
 	 */
-	public void closed() {
+	/*public void closed() {
 		if (null != client) {
 			client.close();
 			client = null;
 		}
-	}
+	}*/
 
 	/**
 	 * exec template(search,delete,insert....)
@@ -129,7 +125,7 @@ public class ElasticClient {
 			if(!StringUtil.isBlank(jsonNode.get("size").toString())){
 				queryBody.append(",\"size\":").append(jsonNode.get("size").toString());
 			}
-		    SearchRequestBuilder srb = client.prepareSearch(script.getIndexName()).setTypes(script.getIndexType()).setQuery(queryBody.toString()).setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+		    SearchRequestBuilder srb = elasticsearchTemplate.getClient().prepareSearch(script.getIndexName()).setTypes(script.getIndexType()).setQuery(queryBody.toString()).setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
 		  
 		    AbstractAggregationBuilder aggsBuilder = JsonUtil.parseJson("aggs", jsonNode.get("aggs"),script.getStartTime(),script.getEndTime());
 		    
