@@ -75,7 +75,7 @@
 
 		$('#consumTab').DataTable({
 			dom : 'Bfrtip',
-			buttons : [ 'csv', 'excel', 'pdf' ]
+			buttons : [ 'csv', 'excel']
 		});
 	})(window, jQuery);
 </script>

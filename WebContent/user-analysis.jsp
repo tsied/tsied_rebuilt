@@ -81,7 +81,7 @@ jQuery(function($) {
 
 		$('#cruxTab').DataTable({
 			dom : 'Bfrtip',
-			buttons : [ 'csv', 'excel', 'pdf' ]
+			buttons : [ 'csv', 'excel']
 		});
 
 	});

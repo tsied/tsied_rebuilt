@@ -118,7 +118,7 @@
 		 $('#flowTab').DataTable( {
 		        dom: 'Bfrtip',
 		        buttons: [
-		            'csv', 'excel', 'pdf'
+		            'csv', 'excel'
 		        ]
 		    } );
 	
