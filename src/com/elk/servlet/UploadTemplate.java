@@ -66,13 +66,13 @@ public class UploadTemplate extends HttpServlet {
 						String fieldName = item.getFieldName();
 						
 						if (fieldName.equals("indexName")){
-							indexName = new String(item.getString().getBytes("ISO-8859-1"), "UTF-8");
+							indexName = item.getString();
 						}
 						
 					} else {
 
-						templatesource = new String(item.getName().getBytes(),"UTF-8");
-						File remoteFile = new File(new String(item.getName().getBytes("ISO-8859-1"),"UTF-8"));
+						templatesource = item.getName();
+						File remoteFile = new File(item.getName());
         				
         				File destFile = new File(Thread.currentThread().getContextClassLoader().getResource("resource/template/es/").getPath(),remoteFile.getName());
         				destFile.getParentFile().mkdirs();
