@@ -63,7 +63,6 @@ public class UserAnalysisAction extends BaseAction{
 		cruxIndex.setAdStartTime(DateUtils.parseDate(DateUtils.formatDate(DateUtils.lastYear())));
 		cruxIndex.setAdEndTime(DateUtils.parseDate(DateUtils.formatDate(DateUtils.getCurrent())));
 		count = advertService.getAdvertCount(cruxIndex);
-		cruxIndex.setPageSize(10);
 		cruxIndex.setTotal(count);
 		cruxIndex.setCurrentTotal(count);
 		List<Advert> advertStatsList = advertService.getAdvertList(cruxIndex);//关健指标分类数值
@@ -220,7 +219,6 @@ public class UserAnalysisAction extends BaseAction{
 		
 	/*	int count = 0;
 		//count = advertService.getAdvertCount(weekIndex);
-		weekIndex.setPageSize(10);
 		weekIndex.setTotal(count);
 		weekIndex.setCurrentTotal(count);
 		*/
@@ -270,7 +268,6 @@ public class UserAnalysisAction extends BaseAction{
 		
 	/*	int count = 0;
 		//count = advertService.getAdvertCount(weekIndex);
-		monthIndex.setPageSize(10);
 		monthIndex.setTotal(count);
 		monthIndex.setCurrentTotal(count);*/
 		

@@ -22,7 +22,7 @@ public class PageSearchForm {
 	private int pageNo = 1;	//第几页,初其化为1
 	private int pageTotal;
 	private int offset;
-	private int pageSize; 
+	private int pageSize = 10; 
 	private int sortFieldNo;// 排序字段
 	private int ascending;// 正倒序(0=倒,1=升)
 

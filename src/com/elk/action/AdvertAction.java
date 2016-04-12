@@ -45,7 +45,6 @@ public class AdvertAction extends BaseAction{
 			Advert advert = advertTerms(request);
 			int count = 0;
 			count = advertService.getAdvertCount(advert);
-			advert.setPageSize(10);
 			advert.setTotal(count);
 			advert.setCurrentTotal(count);
 			List<Advert> advertList = advertService.getAdvertList(advert);
@@ -66,7 +65,6 @@ public class AdvertAction extends BaseAction{
 			initPage(request,response);
 			int count = 0;
 			Advert advert = advertTerms(request);
-			advert.setPageSize(10);
 			count = advertService.getAdvertCount(advert);
 			if(!StringUtil.isBlank(request.getParameter("page"))){
 				advert.setOffset(Integer.parseInt(request.getParameter("offset")));
@@ -137,7 +135,6 @@ public class AdvertAction extends BaseAction{
 		int count = 0;
 		Advert advertPage = new Advert();
 		count = advertService.getAdvertCount(advertPage);
-		advertPage.setPageSize(10);
 		advertPage.setTotal(count);
 		advertPage.setCurrentTotal(count);
 		List<Advert> advertList = advertService.getAdvertList(advertPage);

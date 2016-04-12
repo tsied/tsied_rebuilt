@@ -109,7 +109,6 @@ public class ConsumptionAnalysisAction extends BaseAction{
 			JsonProcessingException {
 		int count = 0;
 		count = advertService.getAdvertCount(advert);
-		advert.setPageSize(10);
 		advert.setTotal(count);
 		advert.setCurrentTotal(count);
 		List<Advert> advertAssortList = advertService.getAdvertList(advert);

@@ -41,7 +41,6 @@ public class FlowAnalysisAction extends BaseAction{
 		advert.setAdStartTime(DateUtils.parseDate(DateUtils.formatDate(DateUtils.lastYear())));
 		advert.setAdEndTime(DateUtils.parseDate(DateUtils.formatDate(DateUtils.getCurrent())));
 		count = advertService.getAdvertCount(advert);
-		advert.setPageSize(10);
 		advert.setTotal(count);
 		advert.setCurrentTotal(count);
 		List<Advert> advertNumList = new ArrayList<Advert>();//合计及平均数值
@@ -59,7 +58,6 @@ public class FlowAnalysisAction extends BaseAction{
 		Advert advert = findAdvertTerms(request);
 		int count = 0;
 		count = advertService.getAdvertCount(advert);
-		advert.setPageSize(10);
 		advert.setTotal(count);
 		advert.setCurrentTotal(count);
 		List<Advert> advertNumList = new ArrayList<Advert>();//合计及平均数值
@@ -100,7 +98,6 @@ public class FlowAnalysisAction extends BaseAction{
 			initPage(request,response);
 			int count = 0;
 			Advert advert = findAdvertTerms(request);
-			advert.setPageSize(10);
 			count = advertService.getAdvertCount(advert);
 			if(!StringUtil.isBlank(request.getParameter("page"))){
 				advert.setOffset(Integer.parseInt(request.getParameter("offset")));
