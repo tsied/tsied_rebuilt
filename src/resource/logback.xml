@@ -18,19 +18,33 @@
 		</triggeringPolicy>
     </appender>
 
-	<logger name="cn.justfly.training.logging" level="info" />
-	<logger name="java.sql.PreparedStatement" value="info" />
-	<logger name="java.sql.Connection" value="info" />
-	<logger name="java.sql.Statement" value="info" />
-	<logger name="com.ibatis" value="info" />
-	<logger name="com.ibatis.common.jdbc.SimpleDataSource" value="info" />
-	<logger name="com.ibatis.common.jdbc.ScriptRunner" value="info" />
-	<logger name="com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate" value="info" />
-	<logger name="org.springframework.test" value="info" />
+	<logger name="cn.justfly.training.logging" level="DEBUG" />
+	<logger name="java.sql.PreparedStatement" value="DEBUG" />
+	<logger name="java.sql.Connection" value="DEBUG" />
+	<logger name="java.sql.Statement" value="DEBUG" />
+	<logger name="com.ibatis" value="DEBUG" />
+	<logger name="com.ibatis.common.jdbc.SimpleDataSource" value="DEBUG" />
+	<logger name="com.ibatis.common.jdbc.ScriptRunner" value="DEBUG" />
+	<logger name="com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate" value="DEBUG" />
+	<logger name="org.springframework.test" value="DEBUG" />
+	
+	<appender name="STDOUT"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} -
+				%msg%n</Pattern>
+		</layout>
+	</appender>
+	
 	<filter class="ch.qos.logback.classic.filter.LevelFilter">  
-    <level>ERROR</level>  
+    <level>ERROR</level>
+    <level>DEBUG</level>  
+    <level>INFO</level>
 	</filter>
     <root level="ERROR">
         <appender-ref ref="FILE" />
     </root>
+    <root level="DEBUG">
+		<appender-ref ref="STDOUT" />
+	</root>
 </configuration>
