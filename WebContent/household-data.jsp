@@ -120,12 +120,8 @@ function houshold_data(a,b,aStr,bStr){
 		 dateList[i] = parseInt(dateSplit[i]);
 	 }
 
-	var defaultMonth = dateList, //时间
-    averages_A = a, //金额
-    averages_B = b, //金额
-    dtime = new Date(defaultMonth[0] * 1000)
-    Year = dtime.getFullYear(),
-    Month = dtime.getMonth() + 1;
+	var averages_A = a, //金额
+    averages_B = b; //金额
 	$('#z_chart').highcharts({
 	    title: {
 	        text: '用户咨询统计'
@@ -145,9 +141,9 @@ function houshold_data(a,b,aStr,bStr){
 	    },
 	    yAxis: {
 	        title: {
-	            text: '咨询数据量',
-	          	min: 0  
+	            text: ''
 	        },
+	        min: 0,
 	        labels: {
 	        formatter:function(){
 	          if(this.value <= 100) {
@@ -177,7 +173,7 @@ function houshold_data(a,b,aStr,bStr){
 	    },
 	     plotOptions: {
 	        series: {
-	            pointStart: Date.UTC(Year, Month, 1),
+	            pointStart: dateList[0] * 1000,
 	            pointInterval: 24 * 3600 * 1000 * 1
 	        }
 	    },
@@ -203,10 +199,6 @@ function houshold_data(a,b,aStr,bStr){
 	  });
 
 }
-$(function(){
-	console.log($('#indexSecond'))
-	$('#indexSecond').find('option').eq(1).attr('selected','selected');
-})
 </script>
 </head>
 <body class="no-skin">
@@ -408,8 +400,13 @@ $(function(){
 									<div class="col-xs-5 col-sm-4" style="padding: 0;">
 										<div class="input-group">
 											<select id="indexSecond" name="indexSecond" class="number">
-												<c:forEach items="${reportIndexList}" var="index">
-														<option value="${index.indexValue}" >${index.indexName}</option>
+												<c:forEach items="${reportIndexList}" var="index" varStatus="status">
+													<c:if test="${status.count==2}">
+														<option value="${index.indexValue}" selected="selected">${index.indexName}</option>
+													</c:if>
+													<c:if test="${status.count!=2}">
+														<option value="${index.indexValue}">${index.indexName}</option>
+													</c:if>
 												</c:forEach>
 											</select>
 										</div>

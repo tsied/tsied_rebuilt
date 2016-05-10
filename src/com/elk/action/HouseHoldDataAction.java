@@ -11,8 +11,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -34,13 +32,11 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 @RequestMapping("/household")
 public class HouseHoldDataAction extends BaseAction {
 
-	private static Logger log = LoggerFactory.getLogger(HouseHoldDataAction.class);
-
 	@RequestMapping(value = "/household-data")
 	public String init(HttpServletRequest request, HttpServletResponse response) throws JsonParseException,
 			JsonMappingException, IOException, ParseException {
 		initPage(request, response);
-		getHouseholdData(request, DateUtils.formatDate(DateUtils.lastYear()),
+		getHouseholdData(request, DateUtils.formatDate(DateUtils.daysDiff(-90)),
 				DateUtils.formatDate(DateUtils.getCurrent()));
 		return "household-data";
 	}
