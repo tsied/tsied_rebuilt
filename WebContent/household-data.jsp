@@ -320,7 +320,7 @@ function houshold_data(a,b){
 									<div class="col-xs-12 col-sm-5">
 										<span class="block input-icon input-icon-right">
 											<div class="input-group">
-												<input type="text" name="startDate" value="${startDate }" class="form-control form-start" readonly="readonly" /> 
+												<input type="text" name="startDate" value="${startDate}" class="form-control form-start" readonly="readonly" /> 
 												<span class="input-group-addon" style="cursor: pointer;">
 													<i class="fa fa-calendar bigger-110"></i>
 												</span>

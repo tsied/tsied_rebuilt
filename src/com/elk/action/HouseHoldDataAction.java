@@ -32,39 +32,46 @@ import com.fasterxml.jackson.databind.JsonMappingException;
  */
 @Controller
 @RequestMapping("/household")
-public class HouseHoldDataAction extends BaseAction{
-	
+public class HouseHoldDataAction extends BaseAction {
+
 	private static Logger log = LoggerFactory.getLogger(HouseHoldDataAction.class);
-	
-	@RequestMapping(value="/household-data")
-	public String  init(HttpServletRequest request,HttpServletResponse response) throws JsonParseException, JsonMappingException, IOException, ParseException{
-		initPage(request,response);
-		getHouseholdData(request,DateUtils.formatDate(DateUtils.lastYear()),DateUtils.formatDate(DateUtils.getCurrent()));
+
+	@RequestMapping(value = "/household-data")
+	public String init(HttpServletRequest request, HttpServletResponse response) throws JsonParseException,
+			JsonMappingException, IOException, ParseException {
+		initPage(request, response);
+		getHouseholdData(request, DateUtils.formatDate(DateUtils.lastYear()),
+				DateUtils.formatDate(DateUtils.getCurrent()));
 		return "household-data";
 	}
 
-
 	@SuppressWarnings("unchecked")
-	private void getHouseholdData(HttpServletRequest request,String startDate,String endDate)
-			throws IOException, JsonParseException, JsonMappingException, JsonProcessingException, ParseException {
-		List<HouseholdData> householdList = new ArrayList<HouseholdData>();//门户咨询数据
-		List<ReportIndex> reportIndexList = new ArrayList<ReportIndex>();//报表指标选项
-		String templatePath = Thread.currentThread().getContextClassLoader().getResource("resource/template/es").getPath()+"/household-data.customcache";
+	private void getHouseholdData(HttpServletRequest request, String startDate, String endDate) throws IOException,
+			JsonParseException, JsonMappingException, JsonProcessingException, ParseException {
+		List<HouseholdData> householdList = new ArrayList<HouseholdData>();// 门户咨询数据
+		List<ReportIndex> reportIndexList = new ArrayList<ReportIndex>();// 报表指标选项
+		String templatePath = Thread.currentThread().getContextClassLoader().getResource("resource/template/es")
+				.getPath()
+				+ "/household-data.customcache";
 		String content = client.readFile(templatePath);
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		long startTime = format.parse(startDate).getTime();
-		long endTime   = format.parse(endDate).getTime();
-		Map<String, String> resultMap = client.execQuery(content,new Script("all_stats","ap_main_site",startTime,endTime));
+		long endTime = format.parse(endDate).getTime();
+		Map<String, String> resultMap = client.execQuery(content, new Script("all_stats", "ap_main_site", startTime,
+				endTime));
 		resultMap.put("templateName", "household-data.ftl");
 		String data = new TemplateUtil().formatData(resultMap);
-		String registerUserTemplatePath =  Thread.currentThread().getContextClassLoader().getResource("resource/template/es").getPath()+"/register-user.customcache";
+		String registerUserTemplatePath = Thread.currentThread().getContextClassLoader()
+				.getResource("resource/template/es").getPath()
+				+ "/register-user.customcache";
 		String userContent = client.readFile(registerUserTemplatePath);
-		Map<String, String> usrMap = client.execQuery(userContent,new Script("pay_s","pay_game",startTime,endTime));
+		Map<String, String> usrMap = client.execQuery(userContent, new Script("pay_s", "pay_game", startTime, endTime));
 		usrMap.put("templateName", "register-user.ftl");
 		String userData = new TemplateUtil().formatData(usrMap);
-		List<Map<String,Object>> userList = mapper.readValue(mapper.readTree(userData).get("series").toString(),List.class) ;//用户数据
-		List<Long> dateList = new ArrayList<Long>();//报表日期
-		List<String> convertDateList = mapper.readValue(mapper.readTree(data).get("date").toString(),List.class) ;
+		List<Map<String, Object>> userList = mapper.readValue(mapper.readTree(userData).get("series").toString(),
+				List.class);// 用户数据
+		List<Long> dateList = new ArrayList<Long>();// 报表日期
+		List<String> convertDateList = mapper.readValue(mapper.readTree(data).get("date").toString(), List.class);
 		for (@SuppressWarnings("rawtypes")
 		Iterator iterator = convertDateList.iterator(); iterator.hasNext();) {
 			String string = (String) iterator.next();
@@ -73,100 +80,106 @@ public class HouseHoldDataAction extends BaseAction{
 		}
 		int ipViewNum = 0;
 		int uvNum = 0;
-		int pvNum=0;
+		int pvNum = 0;
 		int sessionNum = 0;
 		int bounceNum = 0;
 		int avgSessionTime = 0;
 		int reqPageNum = 0;
 		int newRegisterUserNum = 0;
 		int registerUserNum = 0;
-		List<Map<String,Object>> seriesList = mapper.readValue(mapper.readTree(data).get("series").toString(),List.class); 
-		for (Map<String, Object> map : userList) {//将注册用户数模板返回的数据与门户咨询获取的会话数、PV,UV组合在一起
+		List<Map<String, Object>> seriesList = mapper.readValue(mapper.readTree(data).get("series").toString(),
+				List.class);
+		for (Map<String, Object> map : userList) {// 将注册用户数模板返回的数据与门户咨询获取的会话数、PV,UV组合在一起
 			seriesList.add(map);
 		}
-		for(int i = 0 ; i<seriesList.size();i++){
+		for (int i = 0; i < seriesList.size(); i++) {
 			Map<String, Object> map = seriesList.get(i);
 			ReportIndex index = new ReportIndex();
-			for(String key:map.keySet()){
-				switch(map.get(key).toString()){
-					case "pv":
-						index.setIndexName(map.get("name").toString());
-						index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class));
-						List<Integer> pvStats = mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class);
-						for (Integer integer : pvStats) {
-							pvNum += integer;
-						}
-						
+			for (String key : map.keySet()) {
+				switch (map.get(key).toString()) {
+				case "pv":
+					index.setIndexName(map.get("name").toString());
+					index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class));
+					List<Integer> pvStats = mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class);
+					for (Integer integer : pvStats) {
+						pvNum += integer;
+					}
+
 					break;
-					case "uv":	
-						index.setIndexName(map.get("name").toString());
-						index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class));
-						List<Integer> uvStats = mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class);
-						for (Integer integer : uvStats) {
-							uvNum += integer;
-						}
+				case "uv":
+					index.setIndexName(map.get("name").toString());
+					index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class));
+					List<Integer> uvStats = mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class);
+					for (Integer integer : uvStats) {
+						uvNum += integer;
+					}
 					break;
-					case "独立IP访问量":	
-						index.setIndexName(map.get("name").toString());
-						index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class));
-						List<Integer> ipStats = mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class);
-						for (Integer integer : ipStats) {
-							ipViewNum += integer;
-						}
+				case "独立IP访问量":
+					index.setIndexName(map.get("name").toString());
+					index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class));
+					List<Integer> ipStats = mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class);
+					for (Integer integer : ipStats) {
+						ipViewNum += integer;
+					}
 					break;
-					case "会话数":	
-						index.setIndexName(map.get("name").toString());
-						index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class));
-						List<Integer> sessionStats = mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class);
-						for (Integer integer : sessionStats) {
-							sessionNum += integer;
-						}
+				case "会话数":
+					index.setIndexName(map.get("name").toString());
+					index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class));
+					List<Integer> sessionStats = mapper.readValue(mapper.writeValueAsString(map.get("data")),
+							List.class);
+					for (Integer integer : sessionStats) {
+						sessionNum += integer;
+					}
 					break;
-					case "跳出率":	
-						index.setIndexName(map.get("name").toString());
-						index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class));
-						List<Integer> bounceStats = mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class);
-						for (Integer integer : bounceStats) {
-							bounceNum += integer;
-						}
+				case "跳出率":
+					index.setIndexName(map.get("name").toString());
+					index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class));
+					List<Integer> bounceStats = mapper
+							.readValue(mapper.writeValueAsString(map.get("data")), List.class);
+					for (Integer integer : bounceStats) {
+						bounceNum += integer;
+					}
 					break;
-					case "平均会话时长":	
-						index.setIndexName(map.get("name").toString());
-						index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class));
-						List<Integer> sessionTime = mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class);
-						for (Integer integer : sessionTime) {
-							avgSessionTime += integer;
-						}
+				case "平均会话时长":
+					index.setIndexName(map.get("name").toString());
+					index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class));
+					List<Integer> sessionTime = mapper
+							.readValue(mapper.writeValueAsString(map.get("data")), List.class);
+					for (Integer integer : sessionTime) {
+						avgSessionTime += integer;
+					}
 					break;
-					case "平均每次会话浏览页数":	
-						index.setIndexName(map.get("name").toString());
-						index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class));
-						List<Integer> avgReqPage = mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class);
-						for (Integer integer : avgReqPage) {
-							reqPageNum += integer;
-						}
+				case "平均每次会话浏览页数":
+					index.setIndexName(map.get("name").toString());
+					index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class));
+					List<Integer> avgReqPage = mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class);
+					for (Integer integer : avgReqPage) {
+						reqPageNum += integer;
+					}
 					break;
-					case "结束日期注册用户总数":
-						index.setIndexName(map.get("name").toString());
-						index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class));
-						List<Integer> newRegisterUserList = mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class);
-						registerUserNum = getMaxValueFromList(newRegisterUserList);
+				case "结束日期注册用户总数":
+					index.setIndexName(map.get("name").toString());
+					index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class));
+					List<Integer> newRegisterUserList = mapper.readValue(mapper.writeValueAsString(map.get("data")),
+							List.class);
+					registerUserNum = getMaxValueFromList(newRegisterUserList);
 					break;
-					case "新增注册用户数":
-						index.setIndexName(map.get("name").toString());
-						index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class));
-						List<Integer> registerUserList = mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class);
-						for (Integer integer : registerUserList) {
-							newRegisterUserNum += integer;
-						}
+				case "新增注册用户数":
+					index.setIndexName(map.get("name").toString());
+					index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class));
+					List<Integer> registerUserList = mapper.readValue(mapper.writeValueAsString(map.get("data")),
+							List.class);
+					for (Integer integer : registerUserList) {
+						newRegisterUserNum += integer;
+					}
 					break;
 				}
 				index.setIndexDate(dateList);
 			}
-			
+
 			reportIndexList.add(index);
 		}
-		
+
 		HouseholdData household = new HouseholdData();
 		household.setIpViewNum(ipViewNum);
 		household.setNewRegisterUserNum(newRegisterUserNum);
@@ -184,24 +197,26 @@ public class HouseHoldDataAction extends BaseAction{
 		request.setAttribute("startDate", startDate);
 		request.setAttribute("endDate", endDate);
 	}
-	
-	
-	@RequestMapping(value="/find-household-data")
-	public String findHouseholdData(HttpServletRequest request,HttpServletResponse response) throws IOException, ParseException{
-		initPage(request,response);
-		String startDate = request.getParameter("startDate")==null?DateUtils.formatDate(DateUtils.lastYear()):request.getParameter("endDate");
-		String endDate = request.getParameter("endDate")==null?DateUtils.formatDate(DateUtils.getCurrent()):request.getParameter("endDate");
-		getHouseholdData(request,startDate,endDate);
+
+	@RequestMapping(value = "/find-household-data")
+	public String findHouseholdData(HttpServletRequest request, HttpServletResponse response) throws IOException,
+			ParseException {
+		initPage(request, response);
+		String startDate = request.getParameter("startDate") == null ? DateUtils.formatDate(DateUtils.lastYear())
+				: request.getParameter("startDate");
+		String endDate = request.getParameter("endDate") == null ? DateUtils.formatDate(DateUtils.getCurrent())
+				: request.getParameter("endDate");
+		getHouseholdData(request, startDate, endDate);
 		return "household-data";
 	}
-	
-	public Integer getMaxValueFromList(List<Integer> list){
-		  int max=0; 
-		  for(int i=0;i<=list.size()-1;i++) { 
-			  if(max<=list.get(i)){
-				  max=list.get(i); 
-			  }
-		  } 
-		  return max;
+
+	public Integer getMaxValueFromList(List<Integer> list) {
+		int max = 0;
+		for (int i = 0; i <= list.size() - 1; i++) {
+			if (max <= list.get(i)) {
+				max = list.get(i);
+			}
+		}
+		return max;
 	}
 }
