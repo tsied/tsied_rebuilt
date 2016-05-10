@@ -45,9 +45,9 @@
 <script src="<%=request.getContextPath() %>/assets/js/ace-elements.min.js"></script>
 <script src="<%=request.getContextPath() %>/assets/js/ace.min.js"></script>
 <script type="text/javascript">
-	function householdSubmit(){
-		$("#householdForm").submit();
-	}
+function householdSubmit(){
+	$("#householdForm").submit();
+}
 
 jQuery(function($) {
 	if($('#indexFrist').children('option:selected').val()){
@@ -64,7 +64,7 @@ jQuery(function($) {
 		 for(i=0;i<secondIndex.length;i++){
 			 secondList[i] = parseInt(secondIndex[i]);
 		 }
-		houshold_data(firstList,secondList)
+		houshold_data(firstList,secondList,$('#indexFrist').children('option:selected').text(),$('#indexSecond').children('option:selected').text());
 	}	
 		
 	$("#indexFrist").on('change',function(){
@@ -72,7 +72,6 @@ jQuery(function($) {
 		 var secondVal = $('#indexSecond').children('option:selected').val();
 		 var firstIndex = firstVal.replace("[","").replace("]","").split(",");
 		 var secondIndex= secondVal.replace("[","").replace("]","").split(",");
-		
 		 var firstList = new Array();
 		 var secondList = new Array();
 		 for(i=0;i<firstIndex.length;i++){
@@ -81,7 +80,7 @@ jQuery(function($) {
 		 for(i=0;i<secondIndex.length;i++){
 			 secondList[i] = parseInt(secondIndex[i]);
 		 }
-		houshold_data(firstList,secondList)
+		houshold_data(firstList,secondList,$('#indexFrist').children('option:selected').text(),$('#indexSecond').children('option:selected').text());
 	 });	
 		
 	 $("#indexSecond").on('change',function(){
@@ -99,7 +98,7 @@ jQuery(function($) {
 		 for(i=0;i<secondIndex.length;i++){
 			 secondList[i] = parseInt(secondIndex[i]);
 		 }
-		houshold_data(firstList,secondList)
+		houshold_data(firstList,secondList,$('#indexFrist').children('option:selected').text(),$('#indexSecond').children('option:selected').text())
 		
 	 });
 	 
@@ -113,7 +112,7 @@ jQuery(function($) {
 
 
 
-function houshold_data(a,b){
+function houshold_data(a,b,aStr,bStr){
 	 var dateList = new Array();
 	 var dateVal = $("#date").val();
 	 var dateSplit = dateVal.replace("[","").replace("]","").split(",");
@@ -169,7 +168,7 @@ function houshold_data(a,b){
 	    tooltip: {
 	        crosshairs: true,
 	        shared: true,
-	        valueSuffix: '次',
+	        valueSuffix: '',
 	        xDateFormat: '%Y-%m-%d',
 	        shared: true,
 	        style: {
@@ -183,7 +182,7 @@ function houshold_data(a,b){
 	        }
 	    },
 	    series: [{
-	        name: '',
+	        name: aStr,
 	        data: averages_A,
 	        zIndex: 1,
 	        marker: {
@@ -192,7 +191,7 @@ function houshold_data(a,b){
 	            lineColor: Highcharts.getOptions().colors[0]
 	        }
 	    },{
-	        name: '',
+	        name: bStr,
 	        data: averages_B,
 	        zIndex: 1,
 	        marker: {
@@ -204,6 +203,10 @@ function houshold_data(a,b){
 	  });
 
 }
+$(function(){
+	console.log($('#indexSecond'))
+	$('#indexSecond').find('option').eq(1).attr('selected','selected');
+})
 </script>
 </head>
 <body class="no-skin">
@@ -406,7 +409,7 @@ function houshold_data(a,b){
 										<div class="input-group">
 											<select id="indexSecond" name="indexSecond" class="number">
 												<c:forEach items="${reportIndexList}" var="index">
-													<option value="${index.indexValue}">${index.indexName}</option>
+														<option value="${index.indexValue}" >${index.indexName}</option>
 												</c:forEach>
 											</select>
 										</div>
