@@ -103,7 +103,6 @@
 			width : '150px'
 		})
 		$('.form-start').datetimepicker({
-			minDate : '0',
 			"timePicker" : true,
 			"startDate" : "",
 			"endDate" : "",

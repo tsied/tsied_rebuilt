@@ -56,7 +56,7 @@
 							<#list aggregations['8'].buckets as b>
 								<#if flag4>,<#else>
 								<#assign flag4=true/></#if>
-								<#if b['6'].value==0.0 ||  b['5'].value ==0.0>0<#else>${b['6'].value/b['5'].value}</#if>
+								<#if b['6'].value==0.0 ||  b['5'].value ==0.0>0<#else>${(b['6'].value/b['5'].value)?string["0.####"]}</#if>
 							</#list>
 						]
 				},
@@ -67,7 +67,7 @@
 							 <#list aggregations['8'].buckets as b>
 								<#if flag5>,<#else>
 								<#assign flag5=true/></#if>
-								<#if b['7'].value==0.0 ||  b['5'].value ==0.0>0<#else>${b['7'].value/b['5'].value}</#if>
+								<#if b['7'].value==0.0 ||  b['5'].value ==0.0>0<#else>${(b['7'].value/b['5'].value)?string["0.####"]}</#if>
 							</#list>
 						]
 				},
