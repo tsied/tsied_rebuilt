@@ -1,0 +1,36 @@
+{
+  "size": 0,
+  "query": {
+    "filtered": {
+      "query": {
+        "query_string": {
+          "query": "*",
+          "analyze_wildcard": true
+        }
+      },
+      "filter": {
+        "bool": {
+          "must": [
+            {
+              "range": {
+                "statsDate": {
+                  "gte": 1462723200000,
+                  "lte": 1462809599999,
+                  "format": "epoch_millis"
+                }
+              }
+            }
+          ],
+          "must_not": []
+        }
+      }
+    }
+  },
+  "aggs": {
+    "1": {
+      "sum": {
+        "field": "regusercnt"
+      }
+    }
+  }
+}
