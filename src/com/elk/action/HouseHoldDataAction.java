@@ -40,7 +40,7 @@ public class HouseHoldDataAction extends BaseAction {
 			JsonMappingException, IOException, ParseException {
 		initPage(request, response);
 		getHouseholdData(request, DateUtils.formatDate(DateUtils.daysDiff(-90)),
-				DateUtils.formatDate(DateUtils.getCurrent()));
+				DateUtils.formatDate(DateUtils.daysDiff(-1)));
 		return "household-data";
 	}
 
@@ -67,17 +67,19 @@ public class HouseHoldDataAction extends BaseAction {
 		Map<String, String> usrMap = client.execQuery(userContent, new Script("pay_s", "pay_game", startTime, endTime));
 		usrMap.put("templateName", "register-user.ftl");
 		String userData = new TemplateUtil().formatData(usrMap);
-		
-		GetResponse response = client.getESClient().prepareGet("pay_s", "pay_game", endDate + "-local-2").setOperationThreaded(false).get();
+
+		GetResponse response = client.getESClient().prepareGet("pay_s", "pay_game", endDate + "-local-2")
+				.setOperationThreaded(false).get();
 		Integer sumRegUserCnt = Integer.parseInt(response.getSource().get("sumregusercnt").toString());
-		
+
 		String registerNewUserTemplatePath = Thread.currentThread().getContextClassLoader()
 				.getResource("resource/template/es").getPath()
 				+ "/register-newuser.customcache";
 		String newUserContent = client.readFile(registerNewUserTemplatePath);
-		SearchResponse myRsp = client.execQueryRaw(newUserContent, new Script("tmp_stats", "www_stats", startTime, endTime));
+		SearchResponse myRsp = client.execQueryRaw(newUserContent, new Script("tmp_stats", "www_stats", startTime,
+				endTime));
 		Sum newRegisterUserSum = myRsp.getAggregations().get("1");
-		
+
 		List<Map<String, Object>> userList = mapper.readValue(mapper.readTree(userData).get("series").toString(),
 				List.class);// 用户数据
 		List<Long> dateList = new ArrayList<Long>();// 报表日期
@@ -168,20 +170,24 @@ public class HouseHoldDataAction extends BaseAction {
 					}
 					break;
 				case "结束日期注册用户总数":
-//					index.setIndexName(map.get("name").toString());
-//					index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class));
-//					List<Integer> newRegisterUserList = mapper.readValue(mapper.writeValueAsString(map.get("data")),
-//							List.class);
+					// index.setIndexName(map.get("name").toString());
+					// index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")),
+					// List.class));
+					// List<Integer> newRegisterUserList =
+					// mapper.readValue(mapper.writeValueAsString(map.get("data")),
+					// List.class);
 					registerUserNum = sumRegUserCnt;
 					break;
 				case "新增注册用户数":
-//					index.setIndexName(map.get("name").toString());
-//					index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class));
-//					List<Integer> registerUserList = mapper.readValue(mapper.writeValueAsString(map.get("data")),
-//							List.class);
-//					for (Integer integer : registerUserList) {
-//						newRegisterUserNum += integer;
-//					}
+					// index.setIndexName(map.get("name").toString());
+					// index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")),
+					// List.class));
+					// List<Integer> registerUserList =
+					// mapper.readValue(mapper.writeValueAsString(map.get("data")),
+					// List.class);
+					// for (Integer integer : registerUserList) {
+					// newRegisterUserNum += integer;
+					// }
 					break;
 				}
 				index.setIndexDate(dateList);
