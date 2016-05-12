@@ -18,20 +18,25 @@ import freemarker.template.Template;
 
 @Component
 public class TemplateUtil {
-	
+
 	private static Logger log = LoggerFactory.getLogger(TemplateUtil.class);
+
 	/**
-	 *  format ES data
+	 * format ES data
+	 * 
 	 * @param pdata
 	 */
 	@SuppressWarnings({ "unchecked", "deprecation" })
-	public String formatData(Map<String,String> paramMap){
+	public String formatData(Map<String, String> paramMap) {
 		ObjectMapper mapper = new ObjectMapper();
-		Configuration cfg = new Configuration();//init freemarker template
+		Configuration cfg = new Configuration();// init freemarker template
 		cfg.setDefaultEncoding("utf-8");
 		String result = null;
-		try{
-			cfg.setDirectoryForTemplateLoading(new File(Thread.currentThread().getContextClassLoader().getResource("").getPath()+"resource/template/freemarker")); // get template direction
+		try {
+			cfg.setDirectoryForTemplateLoading(new File(Thread.currentThread().getContextClassLoader().getResource("")
+					.getPath()
+					+ "resource/template/freemarker")); // get template
+														// direction
 			Template temp = cfg.getTemplate(paramMap.get("templateName"));
 			temp.setEncoding("UTF-8");
 			Map<String, Object> map = new HashMap<String, Object>();
@@ -41,15 +46,13 @@ public class TemplateUtil {
 				List<?> data = mapper.readValue(paramMap.get("data"), List.class);
 				map.put("data", data);
 				temp.process(map, sw);
-			}
-			else{
+			} else {
 				Map<String, Object> data = mapper.readValue(paramMap.get("data"), Map.class);
 				map.put("data", data);
 				temp.process(data, sw);
 			}
 			result = sw.toString();
-		}catch(Exception e){
-			e.printStackTrace();
+		} catch (Exception e) {
 			log.error(e.getMessage());
 		}
 		return result;

@@ -27,7 +27,7 @@
     }
   },
   "aggs": {
-    "2": {
+    "8": {
       "date_histogram": {
         "field": "statsDate",
         "interval": "1d",
@@ -40,11 +40,6 @@
       },
       "aggs": {
         "1": {
-          "sum": {
-            "field": "regusercnt"
-          }
-        },
-        "3": {
           "sum": {
             "field": "sumregusercnt"
           }

@@ -11,9 +11,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.elasticsearch.action.get.GetResponse;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.search.aggregations.metrics.sum.Sum;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -47,8 +44,11 @@ public class HouseHoldDataAction extends BaseAction {
 	@SuppressWarnings("unchecked")
 	private void getHouseholdData(HttpServletRequest request, String startDate, String endDate) throws IOException,
 			JsonParseException, JsonMappingException, JsonProcessingException, ParseException {
+
 		List<HouseholdData> householdList = new ArrayList<HouseholdData>();// 门户咨询数据
 		List<ReportIndex> reportIndexList = new ArrayList<ReportIndex>();// 报表指标选项
+
+		// WEB访问统计
 		String templatePath = Thread.currentThread().getContextClassLoader().getResource("resource/template/es")
 				.getPath()
 				+ "/household-data.customcache";
@@ -60,28 +60,31 @@ public class HouseHoldDataAction extends BaseAction {
 				endTime));
 		resultMap.put("templateName", "household-data.ftl");
 		String data = new TemplateUtil().formatData(resultMap);
+
+		// 结束日期注册用户数统计
 		String registerUserTemplatePath = Thread.currentThread().getContextClassLoader()
 				.getResource("resource/template/es").getPath()
 				+ "/register-user.customcache";
 		String userContent = client.readFile(registerUserTemplatePath);
 		Map<String, String> usrMap = client.execQuery(userContent, new Script("pay_s", "pay_game", startTime, endTime));
 		usrMap.put("templateName", "register-user.ftl");
-		String userData = new TemplateUtil().formatData(usrMap);
+		String recentRegUserData = new TemplateUtil().formatData(usrMap);
+		List<Map<String, Object>> recentRegUseList = mapper.readValue(mapper.readTree(recentRegUserData).get("series")
+				.toString(), List.class);
 
-		GetResponse response = client.getESClient().prepareGet("pay_s", "pay_game", endDate + "-local-2")
-				.setOperationThreaded(false).get();
-		Integer sumRegUserCnt = Integer.parseInt(response.getSource().get("sumregusercnt").toString());
-
+		// 新增注册用户数统计
 		String registerNewUserTemplatePath = Thread.currentThread().getContextClassLoader()
 				.getResource("resource/template/es").getPath()
 				+ "/register-newuser.customcache";
 		String newUserContent = client.readFile(registerNewUserTemplatePath);
-		SearchResponse myRsp = client.execQueryRaw(newUserContent, new Script("tmp_stats", "www_stats", startTime,
-				endTime));
-		Sum newRegisterUserSum = myRsp.getAggregations().get("1");
+		Map<String, String> newRegUsrMap = client.execQuery(newUserContent, new Script("tmp_stats", "www_stats",
+				startTime, endTime));
+		newRegUsrMap.put("templateName", "register-newuser.ftl");
+		String newRegUserData = new TemplateUtil().formatData(newRegUsrMap);
+		List<Map<String, Object>> newRegUseList = mapper.readValue(mapper.readTree(newRegUserData).get("series")
+				.toString(), List.class);
 
-		List<Map<String, Object>> userList = mapper.readValue(mapper.readTree(userData).get("series").toString(),
-				List.class);// 用户数据
+		// 整合数据结果
 		List<Long> dateList = new ArrayList<Long>();// 报表日期
 		List<String> convertDateList = mapper.readValue(mapper.readTree(data).get("date").toString(), List.class);
 		for (@SuppressWarnings("rawtypes")
@@ -97,13 +100,17 @@ public class HouseHoldDataAction extends BaseAction {
 		int bounceNum = 0;
 		int avgSessionTime = 0;
 		int reqPageNum = 0;
-		int newRegisterUserNum = Double.valueOf(newRegisterUserSum.getValue()).intValue();
+		int newRegisterUserNum = 0;
 		int registerUserNum = 0;
 		List<Map<String, Object>> seriesList = mapper.readValue(mapper.readTree(data).get("series").toString(),
 				List.class);
-		for (Map<String, Object> map : userList) {// 将注册用户数模板返回的数据与门户咨询获取的会话数、PV,UV组合在一起
+		for (Map<String, Object> map : recentRegUseList) {// 将注册用户数模板返回的数据与门户咨询获取的会话数、PV,UV组合在一起
 			seriesList.add(map);
 		}
+		for (Map<String, Object> map : newRegUseList) {// 将注册用户数模板返回的数据与门户咨询获取的会话数、PV,UV组合在一起
+			seriesList.add(map);
+		}
+
 		for (int i = 0; i < seriesList.size(); i++) {
 			Map<String, Object> map = seriesList.get(i);
 			ReportIndex index = new ReportIndex();
@@ -170,24 +177,19 @@ public class HouseHoldDataAction extends BaseAction {
 					}
 					break;
 				case "结束日期注册用户总数":
-					// index.setIndexName(map.get("name").toString());
-					// index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")),
-					// List.class));
-					// List<Integer> newRegisterUserList =
-					// mapper.readValue(mapper.writeValueAsString(map.get("data")),
-					// List.class);
-					registerUserNum = sumRegUserCnt;
+					index.setIndexName(map.get("name").toString());
+					index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class));
+					List<Integer> newRegisterUserList = mapper.readValue(mapper.writeValueAsString(map.get("data")),
+							List.class);
+					registerUserNum = newRegisterUserList.get(newRegisterUserList.size() - 1);
 					break;
 				case "新增注册用户数":
-					// index.setIndexName(map.get("name").toString());
-					// index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")),
-					// List.class));
-					// List<Integer> registerUserList =
-					// mapper.readValue(mapper.writeValueAsString(map.get("data")),
-					// List.class);
-					// for (Integer integer : registerUserList) {
-					// newRegisterUserNum += integer;
-					// }
+					index.setIndexName(map.get("name").toString());
+					index.setIndexValue(mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class));
+					List<Integer> newRegUser = mapper.readValue(mapper.writeValueAsString(map.get("data")), List.class);
+					for (Integer integer : newRegUser) {
+						newRegisterUserNum += integer;
+					}
 					break;
 				}
 				index.setIndexDate(dateList);
