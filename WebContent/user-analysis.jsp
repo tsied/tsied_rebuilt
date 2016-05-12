@@ -435,19 +435,19 @@ jQuery(function($) {
 															<li class="prev disabled"><a href="#">首页</a></li>
 														</c:if>
 														<c:if test="${page.haveFirst}">
-															<li><a href="<%= request.getContextPath()%>/flow/pageForm?page=pre&offset=${page.pre }&cruxAdName=${cruxAdName}&cruxAdProject=${cruxAdProject}&cruxAdType=${cruxAdType}&cruxAdSatus=${cruxAdSatus}&cruxStartDay=${cruxStartDay}&cruxEndDay=${cruxEndDay}&cruxStartDate=${cruxStartDate}&cruxEndDate=${cruxEndDate}">上一页</a></li>
+															<li><a href="<%= request.getContextPath()%>/user/pageForm?page=pre&offset=${page.pre }&cruxAdName=${cruxAdName}&cruxAdProject=${cruxAdProject}&cruxAdType=${cruxAdType}&cruxAdSatus=${cruxAdSatus}&cruxStartDay=${cruxStartDay}&cruxEndDay=${cruxEndDay}&cruxStartDate=${cruxStartDate}&cruxEndDate=${cruxEndDate}">上一页</a></li>
 														</c:if>
 														<c:if test="${!page.haveFirst}">
 															<li class="prev disabled"><a href="#">上一页</a></li>
 														</c:if>
 														<c:if test="${page.haveLast}">
-															<li><a href="<%= request.getContextPath()%>/flow/pageForm?page=next&offset=${page.next }&cruxAdName=${cruxAdName}&cruxAdProject=${cruxAdProject}&cruxAdType=${cruxAdType}&cruxAdSatus=${cruxAdSatus}&cruxStartDay=${cruxStartDay}&cruxEndDay=${cruxEndDay}&cruxStartDate=${cruxStartDate}&cruxEndDate=${cruxEndDate}">下一页</a></li>
+															<li><a href="<%= request.getContextPath()%>/user/pageForm?page=next&offset=${page.next }&cruxAdName=${cruxAdName}&cruxAdProject=${cruxAdProject}&cruxAdType=${cruxAdType}&cruxAdSatus=${cruxAdSatus}&cruxStartDay=${cruxStartDay}&cruxEndDay=${cruxEndDay}&cruxStartDate=${cruxStartDate}&cruxEndDate=${cruxEndDate}">下一页</a></li>
 														</c:if>
 														<c:if test="${!page.haveLast}">
 															<li class="prev disabled"><a href="#">下一页</a></li>
 														</c:if>
 														<c:if test="${page.haveLast}">
-															<li><a href="<%= request.getContextPath()%>/flow/pageForm?page=pre&offset=${page.last }&cruxAdName=${cruxAdName}&cruxAdProject=${cruxAdProject}&cruxAdType=${cruxAdType}&cruxAdSatus=${cruxAdSatus}&cruxStartDay=${cruxStartDay}&cruxEndDay=${cruxEndDay}&cruxStartDate=${cruxStartDate}&cruxEndDate=${cruxEndDate}">尾页</a></li>
+															<li><a href="<%= request.getContextPath()%>/user/pageForm?page=pre&offset=${page.last }&cruxAdName=${cruxAdName}&cruxAdProject=${cruxAdProject}&cruxAdType=${cruxAdType}&cruxAdSatus=${cruxAdSatus}&cruxStartDay=${cruxStartDay}&cruxEndDay=${cruxEndDay}&cruxStartDate=${cruxStartDate}&cruxEndDate=${cruxEndDate}">尾页</a></li>
 														</c:if>
 														<c:if test="${!page.haveLast}">
 															<li class="prev disabled"><a href="#">尾页</a></li>
@@ -634,19 +634,19 @@ jQuery(function($) {
 															<li class="prev disabled"><a href="#">首页</a></li>
 														</c:if>
 														<c:if test="${page.haveFirst}">
-															<li><a href="<%= request.getContextPath()%>/flow/pageForm?page=pre&offset=${page.pre }&weekAdName=${weekAdName}&weekAdProject=${weekAdProject}&weekAdType=${weekAdType}&weekAdSatus=${weekAdSatus}&weekStartDay=${weekStartDay}&weekEndDay=${weekEndDay}&weekStartDate=${weekStartDate}&weekEndDate=${weekEndDate}">上一页</a></li>
+															<li><a href="<%= request.getContextPath()%>/user/pageForm?page=pre&offset=${page.pre }&weekAdName=${weekAdName}&weekAdProject=${weekAdProject}&weekAdType=${weekAdType}&weekAdSatus=${weekAdSatus}&weekStartDay=${weekStartDay}&weekEndDay=${weekEndDay}&weekStartDate=${weekStartDate}&weekEndDate=${weekEndDate}">上一页</a></li>
 														</c:if>
 														<c:if test="${!page.haveFirst}">
 															<li class="prev disabled"><a href="#">上一页</a></li>
 														</c:if>
 														<c:if test="${page.haveLast}">
-															<li><a href="<%= request.getContextPath()%>/flow/pageForm?page=next&offset=${page.next }&weekAdName=${weekAdName}&weekAdProject=${weekAdProject}&weekAdType=${weekAdType}&weekAdSatus=${weekAdSatus}&weekStartDay=${weekStartDay}&weekEndDay=${weekEndDay}&weekStartDate=${weekStartDate}&weekEndDate=${weekEndDate}">下一页</a></li>
+															<li><a href="<%= request.getContextPath()%>/user/pageForm?page=next&offset=${page.next }&weekAdName=${weekAdName}&weekAdProject=${weekAdProject}&weekAdType=${weekAdType}&weekAdSatus=${weekAdSatus}&weekStartDay=${weekStartDay}&weekEndDay=${weekEndDay}&weekStartDate=${weekStartDate}&weekEndDate=${weekEndDate}">下一页</a></li>
 														</c:if>
 														<c:if test="${!page.haveLast}">
 															<li class="prev disabled"><a href="#">下一页</a></li>
 														</c:if>
 														<c:if test="${page.haveLast}">
-															<li><a href="<%= request.getContextPath()%>/flow/pageForm?page=pre&offset=${page.last }&weekAdName=${weekAdName}&weekAdProject=${weekAdProject}&weekAdType=${weekAdType}&weekAdSatus=${weekAdSatus}&weekStartDay=${weekStartDay}&weekEndDay=${weekEndDay}&weekStartDate=${weekStartDate}&weekEndDate=${weekEndDate}">尾页</a></li>
+															<li><a href="<%= request.getContextPath()%>/user/pageForm?page=pre&offset=${page.last }&weekAdName=${weekAdName}&weekAdProject=${weekAdProject}&weekAdType=${weekAdType}&weekAdSatus=${weekAdSatus}&weekStartDay=${weekStartDay}&weekEndDay=${weekEndDay}&weekStartDate=${weekStartDate}&weekEndDate=${weekEndDate}">尾页</a></li>
 														</c:if>
 														<c:if test="${!page.haveLast}">
 															<li class="prev disabled"><a href="#">尾页</a></li>

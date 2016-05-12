@@ -19,6 +19,7 @@ import com.elk.entity.MonthIndex;
 import com.elk.entity.WeekIndex;
 import com.elk.es.Script;
 import com.elk.utils.DateUtils;
+import com.elk.utils.StringUtil;
 import com.elk.utils.StringUtils;
 import com.elk.utils.TemplateUtil;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -154,6 +155,30 @@ public class UserAnalysisAction extends BaseAction {
 		request.setAttribute("page", cruxIndex);
 		request.setAttribute("cruxStartDate", DateUtils.formatDate(cruxIndex.getAdStartTime()));
 		request.setAttribute("cruxEndDate", DateUtils.formatDate(cruxIndex.getAdEndTime()));
+	}
+
+	@RequestMapping(value = "/pageForm")
+	public String page(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		initPage(request, response);
+
+		Advert cruxIndex = new Advert();
+		cruxIndex.setAdStartTime(DateUtils.parseDate(request.getParameter("cruxStartDate")));
+		cruxIndex.setAdEndTime(DateUtils.parseDate(request.getParameter("cruxEndDate")));
+		if (!StringUtil.isBlank(request.getParameter("page"))) {
+			cruxIndex.setOffset(Integer.parseInt(request.getParameter("offset")));
+		}
+		getCruxIndexData(request, cruxIndex);
+		List<WeekIndex> weekIndexList = new ArrayList<WeekIndex>();// 周指标合计数值
+		List<WeekIndex> weekIndexAssortList = new ArrayList<WeekIndex>();// 周指标分类数值
+		request.setAttribute("weekIndexList", weekIndexList);
+		request.setAttribute("weekIndexAssortList", weekIndexAssortList);
+
+		List<MonthIndex> monthIndexList = new ArrayList<MonthIndex>();// 月指标合计数值
+		List<MonthIndex> monthIndexAssortList = new ArrayList<MonthIndex>();// 月指标分类数值
+		request.setAttribute("monthIndexList", monthIndexList);
+		request.setAttribute("monthIndexAssortList", monthIndexAssortList);
+
+		return "user-analysis";
 	}
 
 	/**

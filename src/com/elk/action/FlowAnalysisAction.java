@@ -43,13 +43,14 @@ public class FlowAnalysisAction extends BaseAction {
 		Date initEndDate = DateUtils.daysDiff(90);
 
 		Advert advert = new Advert();
-		advert.setAdStartTime(DateUtils.parseDate(DateUtils.formatDate(DateUtils.lastYear())));
-		advert.setAdEndTime(DateUtils.parseDate(DateUtils.formatDate(DateUtils.getCurrent())));
+		advert.setAdStartTime(initStartDate);
+		advert.setAdEndTime(initEndDate);
 		count = advertService.getAdvertCount(advert);
 		advert.setTotal(count);
 		advert.setCurrentTotal(count);
-		advert.setAdStartTime(initStartDate);
-		advert.setAdEndTime(initEndDate);
+		if (!StringUtil.isBlank(request.getParameter("page"))) {
+			advert.setOffset(Integer.parseInt(request.getParameter("offset")));
+		}
 		List<Advert> advertNumList = new ArrayList<Advert>();// 合计及平均数值
 		List<Advert> advertAssortList = advertService.getAdvertList(advert);// 获取广告信息
 		List<Advert> advertStatsList = new ArrayList<Advert>();// 分类数值
@@ -67,6 +68,9 @@ public class FlowAnalysisAction extends BaseAction {
 		count = advertService.getAdvertCount(advert);
 		advert.setTotal(count);
 		advert.setCurrentTotal(count);
+		if (!StringUtil.isBlank(request.getParameter("page"))) {
+			advert.setOffset(Integer.parseInt(request.getParameter("offset")));
+		}
 		List<Advert> advertNumList = new ArrayList<Advert>();// 合计及平均数值
 		List<Advert> advertAssortList = advertService.getAdvertList(advert);// 获取广告信息
 		List<Advert> advertStatsList = new ArrayList<Advert>();
@@ -116,7 +120,7 @@ public class FlowAnalysisAction extends BaseAction {
 		List<Advert> advertAssortList = advertService.getAdvertList(advert);// 分类数值
 		List<Advert> advertStatsList = new ArrayList<Advert>();// 分类数值
 		assembleAdvert(request, advert, advertNumList, advertAssortList, advertStatsList);
-		return "ad";
+		return "flow-analysis";
 	}
 
 	private void assembleAdvert(HttpServletRequest request, Advert advert, List<Advert> advertNumList,
