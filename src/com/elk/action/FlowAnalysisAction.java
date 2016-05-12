@@ -2,14 +2,13 @@ package com.elk.action;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -32,24 +31,27 @@ import com.fasterxml.jackson.databind.JsonNode;
 @RequestMapping("/flow")
 public class FlowAnalysisAction extends BaseAction {
 
-	private static Logger log = LoggerFactory.getLogger(FlowAnalysisAction.class);
-
 	@RequestMapping(value = "/flow-analysis")
 	public String index(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		initPage(request, response);
 		int count = 0;
+		Date initStartDate = DateUtils.daysDiff(-90);
+		Date initEndDate = DateUtils.daysDiff(90);
+
 		Advert advert = new Advert();
 		advert.setAdStartTime(DateUtils.parseDate(DateUtils.formatDate(DateUtils.lastYear())));
 		advert.setAdEndTime(DateUtils.parseDate(DateUtils.formatDate(DateUtils.getCurrent())));
 		count = advertService.getAdvertCount(advert);
 		advert.setTotal(count);
 		advert.setCurrentTotal(count);
+		advert.setAdStartTime(initStartDate);
+		advert.setAdEndTime(initEndDate);
 		List<Advert> advertNumList = new ArrayList<Advert>();// 合计及平均数值
 		List<Advert> advertAssortList = advertService.getAdvertList(advert);// 获取广告信息
 		List<Advert> advertStatsList = new ArrayList<Advert>();// 分类数值
 		assembleAdvert(request, advert, advertNumList, advertAssortList, advertStatsList);
-		request.setAttribute("adStartTime", DateUtils.formatDate(DateUtils.lastYear()));
-		request.setAttribute("adEndTime", DateUtils.formatDate(DateUtils.getCurrent()));
+		request.setAttribute("adStartTime", DateUtils.formatDate(initStartDate));
+		request.setAttribute("adEndTime", DateUtils.formatDate(initEndDate));
 		return "flow-analysis";
 	}
 
