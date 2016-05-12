@@ -86,7 +86,15 @@ public class UserAnalysisAction extends BaseAction {
 			indexName = indexService.getIndexTypeByValue(ad.getAdProject());
 			Script script = new Script(indexName.replace("all_", "pay_"), ad.getAdStartTime().getTime(), ad
 					.getAdEndTime().getTime(), ad.getAdAddr());
-			Map<String, String> resultMap = client.execQuery(content, script);
+			Map<String, String> resultMap = null;
+			try {
+
+				resultMap = client.execQuery(content, script);
+			} catch (Exception e) {
+				log.error("ad [" + ad.getAdAddr() + "] hava no data", e);
+				continue;
+			}
+
 			resultMap.put("templateName", "user-analysis.ftl");
 			String data = new TemplateUtil().formatData(resultMap);
 			@SuppressWarnings("unchecked")

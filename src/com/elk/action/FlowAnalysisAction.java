@@ -9,6 +9,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -30,6 +32,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Controller
 @RequestMapping("/flow")
 public class FlowAnalysisAction extends BaseAction {
+
+	private static Logger log = LoggerFactory.getLogger(FlowAnalysisAction.class);
 
 	@RequestMapping(value = "/flow-analysis")
 	public String index(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -134,7 +138,14 @@ public class FlowAnalysisAction extends BaseAction {
 			indexName = indexService.getIndexTypeByValue(ad.getAdProject());
 			Script script = new Script(indexName, ad.getAdStartTime().getTime(), ad.getAdEndTime().getTime(),
 					ad.getAdAddr());
-			Map<String, String> resultMap = client.execQuery(content, script);
+			Map<String, String> resultMap = null;
+			try {
+				resultMap = client.execQuery(content, script);
+			} catch (Exception e) {
+				log.error("ad [" + ad.getAdAddr() + "] hava no data", e);
+				continue;
+			}
+
 			resultMap.put("templateName", "flow-analysis.ftl");
 			String data = new TemplateUtil().formatData(resultMap);
 			@SuppressWarnings("unchecked")
