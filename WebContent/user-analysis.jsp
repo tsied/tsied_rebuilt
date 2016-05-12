@@ -326,7 +326,7 @@ jQuery(function($) {
 														<div class="col-xs-12 col-sm-5" style="padding-left: 0;">
 															<span class="block input-icon input-icon-right">
 																<div class="input-group">
-																	<input type="text" id="cruxStartDate" name="cruxStartDate" value="${cruxStartDate }" class="form-control form-end" readonly="readonly">
+																	<input type="text" id="cruxStartDate" name="cruxStartDate" value="${cruxStartDate}" class="form-control form-end" readonly="readonly">
 																	<span class="input-group-addon" style="cursor: pointer;"> 
 																		<i class="fa fa-calendar bigger-110"></i>
 																	</span>

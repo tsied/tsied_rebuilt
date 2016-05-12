@@ -77,7 +77,7 @@ public class HouseHoldDataAction extends BaseAction {
 				.getResource("resource/template/es").getPath()
 				+ "/register-newuser.customcache";
 		String newUserContent = client.readFile(registerNewUserTemplatePath);
-		Map<String, String> newRegUsrMap = client.execQuery(newUserContent, new Script("tmp_stats", "www_stats",
+		Map<String, String> newRegUsrMap = client.execQuery(newUserContent, new Script("pay_stats", "pay_stats",
 				startTime, endTime));
 		newRegUsrMap.put("templateName", "register-newuser.ftl");
 		String newRegUserData = new TemplateUtil().formatData(newRegUsrMap);

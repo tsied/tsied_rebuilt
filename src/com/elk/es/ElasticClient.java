@@ -109,53 +109,58 @@ public class ElasticClient {
 			srb.addAggregation(aggsBuilder);
 			log.debug(srb.toString());
 			sResponse = srb.execute().actionGet();
-			log.debug(sResponse.toString());
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}
-		resultMap.put("data", sResponse.toString());
+		resultMap.put("data", sResponse == null ? "" : sResponse.toString());
 		return resultMap;
 	}
-	
+
 	/**
 	 * search execQuery
+	 * 
 	 * @param source
 	 * @param indexName
 	 * @return
 	 */
-	public SearchResponse  execQueryRaw(String source,Script script){
+	public SearchResponse execQueryRaw(String source, Script script) {
 		SearchResponse sResponse = null;
 		StringBuffer queryBody = new StringBuffer();
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode jsonNode = mapper.readTree(source);
-			
+
 			JSONObject jsonObject = JSONObject.parseObject(jsonNode.get("query").toString());
 
-			JSONArray mustNodeArray = jsonObject.getJSONObject("filtered").getJSONObject("filter").getJSONObject("bool").getJSONArray("must");
+			JSONArray mustNodeArray = jsonObject.getJSONObject("filtered").getJSONObject("filter")
+					.getJSONObject("bool").getJSONArray("must");
 			for (Iterator<Object> iterator = mustNodeArray.iterator(); iterator.hasNext();) {
 				JSONObject jSONObject = (JSONObject) iterator.next();
 				if (jSONObject.getJSONObject("range") != null) {
 					@SuppressWarnings("unchecked")
-					Map<String,String>   timestampMap = mapper.readValue(jSONObject.getJSONObject("range").toJSONString(), Map.class);
+					Map<String, String> timestampMap = mapper.readValue(jSONObject.getJSONObject("range")
+							.toJSONString(), Map.class);
 					for (String dateRange : timestampMap.keySet()) {
 						script.setDateRange(dateRange);
 					}
 				}
 			}
-			HashMap<String, String> paramMap = new HashMap<String,String>();
+			HashMap<String, String> paramMap = new HashMap<String, String>();
 			paramMap.put("templateName", "script-body.ftl");
 			paramMap.put("data", mapper.writeValueAsString(script));
 			String scriptBody = new TemplateUtil().formatData(paramMap);
 			queryBody.append(scriptBody);
-			
-			if(!StringUtil.isBlank(jsonNode.get("size").toString())){
+
+			if (!StringUtil.isBlank(jsonNode.get("size").toString())) {
 				queryBody.append(",\"size\":").append(jsonNode.get("size").toString());
 			}
-		    SearchRequestBuilder srb = elasticsearchTemplate.getClient().prepareSearch(script.getIndexName()).setTypes(script.getIndexType()).setQuery(queryBody.toString()).setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
-		  
-		    AbstractAggregationBuilder aggsBuilder = JsonUtil.parseJson("aggs", jsonNode.get("aggs"),script.getStartTime(),script.getEndTime());
-		    
+			SearchRequestBuilder srb = elasticsearchTemplate.getClient().prepareSearch(script.getIndexName())
+					.setTypes(script.getIndexType()).setQuery(queryBody.toString())
+					.setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+
+			AbstractAggregationBuilder aggsBuilder = JsonUtil.parseJson("aggs", jsonNode.get("aggs"),
+					script.getStartTime(), script.getEndTime());
+
 			srb.addAggregation(aggsBuilder);
 			sResponse = srb.execute().actionGet();
 		} catch (Exception e) {
@@ -163,10 +168,9 @@ public class ElasticClient {
 		}
 		return sResponse;
 	}
-	
+
 	public Client getESClient() {
 		return elasticsearchTemplate.getClient();
 	}
-	
 
 }

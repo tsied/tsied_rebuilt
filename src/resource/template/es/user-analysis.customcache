@@ -3,13 +3,23 @@
     "filtered": {
       "query": {
         "query_string": {
-          "query": "*",
-          "analyze_wildcard": true
+          "analyze_wildcard": true,
+          "query": "*"
         }
       },
       "filter": {
         "bool": {
           "must": [
+            {
+              "query": {
+                "match": {
+                  "source_url.raw": {
+                    "query": "baidu.com",
+                    "type": "phrase"
+                  }
+                }
+              }
+            },
             {
               "range": {
                 "statsDate": {
