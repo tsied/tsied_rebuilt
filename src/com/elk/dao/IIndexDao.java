@@ -14,4 +14,5 @@ public interface IIndexDao {
 	List<Menu> getMenuList(User user);
 	List<Dic>  getDicList(String dicKey);
 	String getIndexTypeByValue(String dicValue);
+	String getIndexByValue(Integer dicValue);
 }

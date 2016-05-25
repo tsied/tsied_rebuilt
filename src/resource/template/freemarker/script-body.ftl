@@ -3,19 +3,23 @@
     "filtered": {
         "query": {
             "query_string": {
+            	<#if advertAddr??>
+            	"query": "${advertAddr}",
+            	<#else>
                 "query": "*",
+                </#if>
                 "analyze_wildcard": true
             }
         },
         "filter": {
             "bool": {
                 "must": [
-                    <#if advertAddr??>
+                    <#if advertAddrs??>
                     {
                         "query": {
                             "match": {
                                 "source_url.raw": {
-                                    "query": "${advertAddr}",
+                                    "query": "${advertAddrs}",
                                     "type": "phrase"
                                 }
                             }

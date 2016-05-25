@@ -4,6 +4,18 @@
 {
 	
 		"series":[
+				<#assign flag0=false/>
+				{
+					"name":"addomain",
+					"data":[
+						 <#list aggregations['8'].buckets as b>
+							<#if flag0>,<#else>
+							<#assign flag0=true/></#if>
+							<#if b['key']??>"${b['key']}"<#else>""</#if>
+						</#list>
+					]
+				},
+		
 				<#assign flag=false/>
 				{
 					"name":"pv",

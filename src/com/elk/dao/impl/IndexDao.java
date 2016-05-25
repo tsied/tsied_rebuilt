@@ -30,5 +30,10 @@ public class IndexDao extends BaseDao implements IIndexDao{
 	public String getIndexTypeByValue(String dicValue) {
 		return this.getSqlSession().selectOne("selectIndexType",dicValue);
 	}
+	
+	@Override
+	public String getIndexByValue(Integer dicValue) {
+		return this.getSqlSession().selectOne("selectIndex",dicValue);
+	}
 
 }

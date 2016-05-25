@@ -36,4 +36,8 @@ public class IndexService implements IIndexService{
 		return indexDao.getIndexTypeByValue(dicValue);
 	}
 
+	@Override
+	public String getIndexByValue(Integer dicValue) {
+		return indexDao.getIndexByValue(dicValue);
+	}
 }

@@ -22,7 +22,19 @@
 												<#if b['1'].value??>${b['1'].value}<#else>0</#if>
 										</#list>
 									]
+						},
+						<#assign flag2=false/>
+						{
+								"name":"登录用户数",
+								"data":[
+										 <#list aggregations['8'].buckets as b>
+												<#if flag2>,<#else>
+												<#assign flag2=true/></#if>
+												<#if b['2'].value??>${b['2'].value}<#else>0</#if>
+										</#list>
+									]
 						}
+						
 						
 						
 	

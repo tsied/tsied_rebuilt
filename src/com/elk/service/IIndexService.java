@@ -14,4 +14,5 @@ public interface IIndexService {
 	List<Menu> getMenuList(User user);//获取菜单栏
 	List<Dic> getDicList(String dicKey);//获取字典表
 	String getIndexTypeByValue(String dicValue);
+	String getIndexByValue(Integer dicValue);
 }

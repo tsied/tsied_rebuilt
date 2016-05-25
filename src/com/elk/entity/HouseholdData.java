@@ -17,7 +17,7 @@ public class HouseholdData {
 	private Integer bounceNum;//跳出率
 	private Integer avgSessionTime;//平均会话时长
 	private Integer reqPageNum;//平均每次会话浏览页数
-	
+	private Integer loginUserNum;//登录用户数
 	
 	public Integer getBounceNum() {
 		return bounceNum;
@@ -85,4 +85,11 @@ public class HouseholdData {
 	public void setNewRegisterUserNum(Integer newRegisterUserNum) {
 		this.newRegisterUserNum = newRegisterUserNum;
 	}
+	public Integer getLoginUserNum() {
+		return loginUserNum;
+	}
+	public void setLoginUserNum(Integer loginUserNum) {
+		this.loginUserNum = loginUserNum;
+	}
+	
 }
