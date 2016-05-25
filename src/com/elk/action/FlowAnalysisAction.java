@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,7 @@ import com.elk.es.Script;
 import com.elk.utils.DateUtils;
 import com.elk.utils.StringUtil;
 import com.elk.utils.TemplateUtil;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -54,7 +56,7 @@ public class FlowAnalysisAction extends BaseAction {
 		List<Advert> advertNumList = new ArrayList<Advert>();// 合计及平均数值
 		List<Advert> advertAssortList = advertService.getAdvertList(advert);// 获取广告信息
 		List<Advert> advertStatsList = new ArrayList<Advert>();// 分类数值
-		assembleAdvert(request, advert, advertNumList, advertAssortList, advertStatsList);
+		assembleAdvert(request, request.getParameter("adProject"), advert, advertNumList, advertAssortList, advertStatsList);
 		request.setAttribute("adStartTime", DateUtils.formatDate(initStartDate));
 		request.setAttribute("adEndTime", DateUtils.formatDate(initEndDate));
 		return "flow-analysis";
@@ -74,7 +76,7 @@ public class FlowAnalysisAction extends BaseAction {
 		List<Advert> advertNumList = new ArrayList<Advert>();// 合计及平均数值
 		List<Advert> advertAssortList = advertService.getAdvertList(advert);// 获取广告信息
 		List<Advert> advertStatsList = new ArrayList<Advert>();
-		assembleAdvert(request, advert, advertNumList, advertAssortList, advertStatsList);
+		assembleAdvert(request, request.getParameter("adProject"), advert, advertNumList, advertAssortList, advertStatsList);
 		return "flow-analysis";
 	}
 
@@ -91,8 +93,8 @@ public class FlowAnalysisAction extends BaseAction {
 		 * if(!StringUtils.isBlank(request.getParameter("endDay").toString())){
 		 * advert.setEndDay(Integer.parseInt(request.getParameter("endDay"))); }
 		 */
-		advert.setAdStartTime(DateUtils.parseDate(request.getParameter("adStartTime")));
-		advert.setAdEndTime(DateUtils.parseDate(request.getParameter("adEndTime")));
+//		advert.setAdStartTime(DateUtils.parseDate(request.getParameter("adStartTime")));
+//		advert.setAdEndTime(DateUtils.parseDate(request.getParameter("adEndTime")));
 
 		request.setAttribute("adName", request.getParameter("adName"));
 		request.setAttribute("adProject", request.getParameter("adProject"));
@@ -119,13 +121,14 @@ public class FlowAnalysisAction extends BaseAction {
 		List<Advert> advertNumList = new ArrayList<Advert>();// 合计及平均数值
 		List<Advert> advertAssortList = advertService.getAdvertList(advert);// 分类数值
 		List<Advert> advertStatsList = new ArrayList<Advert>();// 分类数值
-		assembleAdvert(request, advert, advertNumList, advertAssortList, advertStatsList);
+		assembleAdvert(request, request.getParameter("adProject"), advert, advertNumList, advertAssortList, advertStatsList);
 		return "flow-analysis";
 	}
 
-	private void assembleAdvert(HttpServletRequest request, Advert advert, List<Advert> advertNumList,
+	private void assembleAdvert(HttpServletRequest request, String project, Advert advert, List<Advert> advertNumList,
 			List<Advert> advertAssortList, List<Advert> advertStatsList) throws IOException, JsonParseException,
 			JsonMappingException, JsonProcessingException {
+		String adAddr = "";
 		int uvNum = 0;
 		int ipNum = 0;
 		int sessionNum = 0;
@@ -134,64 +137,196 @@ public class FlowAnalysisAction extends BaseAction {
 		double bounceRate = 0.00;
 		String indexName = "";
 
+//		for (Advert ad : advertAssortList) {
+//			String templatePath = Thread.currentThread().getContextClassLoader().getResource("resource/template/es")
+//					.getPath()
+//					+ "/flow-analysis.customcache";
+//			String content = client.readFile(templatePath);
+//			indexName = indexService.getIndexTypeByValue(ad.getAdProject());
+//			Script script = new Script(indexName, ad.getAdStartTime().getTime(), ad.getAdEndTime().getTime(),
+//					ad.getAdAddr());
+//			Map<String, String> resultMap = null;
+//			try {
+//				resultMap = client.execQuery(content, script);
+//			} catch (Exception e) {
+//				log.error("ad [" + ad.getAdAddr() + "] hava no data", e);
+//				continue;
+//			}
+//
+//			resultMap.put("templateName", "flow-analysis.ftl");
+//			String data = new TemplateUtil().formatData(resultMap);
+//			@SuppressWarnings("unchecked")
+//			Map<String, List<Map<String, Object>>> statsMap = mapper.readValue(data, Map.class);
+//			for (String key : statsMap.keySet()) {
+//				for (Map<String, Object> map : statsMap.get(key)) {
+//					JsonNode node = mapper.readTree(mapper.writeValueAsString(map));
+//					String str = node.get("name").textValue();
+//					String dataValue = node.get("data").toString()
+//							.substring(1, node.get("data").toString().length() - 1);
+//					switch (str) {
+//					case "uv":
+//						ad.setUserViewNum("".equals(dataValue) ? 0 : Integer.valueOf(dataValue));
+//						uvNum += "".equals(dataValue) ? 0 : Integer.valueOf(dataValue);
+//						break;
+//					case "ipStats":
+//						ad.setIpViewNum("".equals(dataValue) ? 0 : Integer.valueOf(dataValue));
+//						ipNum += "".equals(dataValue) ? 0 : Integer.valueOf(dataValue);
+//						break;
+//					case "sessionStat":
+//						ad.setSessionNum("".equals(dataValue) ? 0 : Integer.valueOf(dataValue));
+//						sessionNum += "".equals(dataValue) ? 0 : Integer.valueOf(dataValue);
+//						break;
+//					case "reqPages":
+//						ad.setAvgSessionViewNum("".equals(dataValue) ? 0 : Integer.valueOf(dataValue));
+//						avgViewNum += "".equals(dataValue) ? 0 : Integer.valueOf(dataValue);
+//						break;
+//					case "sessionTime":
+//						ad.setAvgSessionDuration("".equals(dataValue) ? "0"
+//								: String.valueOf(Integer.valueOf(dataValue) / 1000));
+//						sessionTime += "".equals(dataValue) ? 0 : Integer.valueOf(dataValue) / 1000;
+//						break;
+//					case "bounceSessionCount":
+//						ad.setBounceRate("".equals(dataValue) ? "0" : dataValue);
+//						bounceRate += "".equals(dataValue) ? 0 : Double.valueOf(dataValue);
+//						break;
+//					}
+//				}
+//			}
+//			advertStatsList.add(ad);
+//		}
+		
+		List<String> adQueryList = new ArrayList<String>();
+		String delimiter = "and";
 		for (Advert ad : advertAssortList) {
-			String templatePath = Thread.currentThread().getContextClassLoader().getResource("resource/template/es")
-					.getPath()
-					+ "/flow-analysis.customcache";
-			String content = client.readFile(templatePath);
-			indexName = indexService.getIndexTypeByValue(ad.getAdProject());
-			Script script = new Script(indexName, ad.getAdStartTime().getTime(), ad.getAdEndTime().getTime(),
-					ad.getAdAddr());
-			Map<String, String> resultMap = null;
-			try {
-				resultMap = client.execQuery(content, script);
-			} catch (Exception e) {
-				log.error("ad [" + ad.getAdAddr() + "] hava no data", e);
-				continue;
-			}
+			if (1 > advertAssortList.size() ) {
+				String adQuery = "*";
+				adQueryList.add(ad.getAdAddr());
+			} else if (1 == advertAssortList.size()) {
+				String adQuery = ad.getAdAddr();
+				adQueryList.add(ad.getAdAddr());
+			} else {
+				adQueryList.add("source_url.raw:" + ad.getAdAddr());
+//				String adQuery = ad.getAdAddr() + 'and' ;
+			}			 					
+		}		
+		String adQuery = StringUtils.join(adQueryList, " and ");
+		
+		
+		
+		String templatePath = Thread.currentThread().getContextClassLoader().getResource("resource/template/es")
+				.getPath()
+				+ "/flow-analysis.customcache";
+		String content = client.readFile(templatePath);
+		indexName = indexService.getIndexByValue(Integer.parseInt(project));
+		Script script = new Script(indexName, DateUtils.parseDate(request.getParameter("adStartTime")).getTime(), DateUtils.parseDate(request.getParameter("adEndTime")).getTime(),
+				adQuery);
+		Map<String, String> resultMap = null;
+		try {
+			resultMap = client.execQuery(content, script);
+		} catch (Exception e) {
+			log.error("ad [" + adQuery + "] hava no data", e);
 
-			resultMap.put("templateName", "flow-analysis.ftl");
-			String data = new TemplateUtil().formatData(resultMap);
-			@SuppressWarnings("unchecked")
-			Map<String, List<Map<String, Object>>> statsMap = mapper.readValue(data, Map.class);
-			for (String key : statsMap.keySet()) {
-				for (Map<String, Object> map : statsMap.get(key)) {
-					JsonNode node = mapper.readTree(mapper.writeValueAsString(map));
-					String str = node.get("name").textValue();
-					String dataValue = node.get("data").toString()
-							.substring(1, node.get("data").toString().length() - 1);
-					switch (str) {
-					case "uv":
-						ad.setUserViewNum("".equals(dataValue) ? 0 : Integer.valueOf(dataValue));
-						uvNum += "".equals(dataValue) ? 0 : Integer.valueOf(dataValue);
-						break;
-					case "ipStats":
-						ad.setIpViewNum("".equals(dataValue) ? 0 : Integer.valueOf(dataValue));
-						ipNum += "".equals(dataValue) ? 0 : Integer.valueOf(dataValue);
-						break;
-					case "sessionStat":
-						ad.setSessionNum("".equals(dataValue) ? 0 : Integer.valueOf(dataValue));
-						sessionNum += "".equals(dataValue) ? 0 : Integer.valueOf(dataValue);
-						break;
-					case "reqPages":
-						ad.setAvgSessionViewNum("".equals(dataValue) ? 0 : Integer.valueOf(dataValue));
-						avgViewNum += "".equals(dataValue) ? 0 : Integer.valueOf(dataValue);
-						break;
-					case "sessionTime":
-						ad.setAvgSessionDuration("".equals(dataValue) ? "0"
-								: String.valueOf(Integer.valueOf(dataValue) / 1000));
-						sessionTime += "".equals(dataValue) ? 0 : Integer.valueOf(dataValue) / 1000;
-						break;
-					case "bounceSessionCount":
-						ad.setBounceRate("".equals(dataValue) ? "0" : dataValue);
-						bounceRate += "".equals(dataValue) ? 0 : Double.valueOf(dataValue);
-						break;
-					}
-				}
-			}
-			advertStatsList.add(ad);
 		}
 
+		resultMap.put("templateName", "flow-analysis.ftl");
+		String data = new TemplateUtil().formatData(resultMap);
+		@SuppressWarnings("unchecked")
+		Map<String, List<Map<String, Object>>> statsMap = mapper.readValue(data, Map.class);
+		/***------------------------------------------------*/
+		List<Advert> strlist = new ArrayList<Advert>();
+		for (String key : statsMap.keySet()) {
+			Advert ad = new Advert();
+			for (Map<String, Object> map : statsMap.get(key)) {
+				JsonNode node = mapper.readTree(mapper.writeValueAsString(map));
+				String str = node.get("name").textValue();
+				String dataValue = node.get("data").toString().substring(1, node.get("data").toString().length() - 1);
+				String[] stra = dataValue.split(",");
+				for(int i=0;i<stra.length;i++){
+					Advert adtmp = new Advert();
+					strlist.add(adtmp);
+				}
+			}
+		}
+		
+		/***------------------------------------------------*/
+		
+		for (String key : statsMap.keySet()) {
+			Advert ad = new Advert();
+			for (Map<String, Object> map : statsMap.get(key)) {
+				JsonNode node = mapper.readTree(mapper.writeValueAsString(map));
+				String str = node.get("name").textValue();
+				String dataValue = node.get("data").toString()
+						.substring(1, node.get("data").toString().length() - 1);
+				
+				switch (str) {
+				case "addomain":
+//					ad.setAdAddr(dataValue);
+										
+					String[] stra = dataValue.split(",");
+					for(int i=0;i<stra.length;i++){
+						strlist.get(i).setAdAddr(stra[i]);
+					}
+										
+					
+//					adAddr = dataValue;
+					break;
+				case "uv":
+					
+					String[] strauv = dataValue.split(",");
+					for(int i=0;i<strauv.length;i++){
+						strlist.get(i).setUserViewNum("".equals(strauv[i]) ? 0 : Integer.valueOf(strauv[i]));
+					}
+					
+//					ad.setUserViewNum("".equals(dataValue) ? 0 : Integer.valueOf(dataValue));
+//					uvNum += "".equals(dataValue) ? 0 : Integer.valueOf(dataValue);
+					break;
+				case "ipStats":
+					String[] straip = dataValue.split(",");
+					for(int i=0;i<straip.length;i++){
+						strlist.get(i).setIpViewNum("".equals(straip[i]) ? 0 : Integer.valueOf(straip[i]));
+					}
+//					ad.setIpViewNum("".equals(dataValue) ? 0 : Integer.valueOf(dataValue));
+//					ipNum += "".equals(dataValue) ? 0 : Integer.valueOf(dataValue);
+					break;
+				case "sessionStat":
+					String[] strasession = dataValue.split(",");
+					for(int i=0;i<strasession.length;i++){
+						strlist.get(i).setSessionNum("".equals(strasession[i]) ? 0 : Integer.valueOf(strasession[i]));
+					}
+//					ad.setSessionNum("".equals(dataValue) ? 0 : Integer.valueOf(dataValue));
+//					sessionNum += "".equals(dataValue) ? 0 : Integer.valueOf(dataValue);
+					break;
+				case "reqPages":
+					String[] strapages = dataValue.split(",");
+					for(int i=0;i<strapages.length;i++){
+						strlist.get(i).setAvgSessionViewNum("".equals(strapages[i]) ? 0 : Integer.valueOf(strapages[i]));
+					}
+//					ad.setAvgSessionViewNum("".equals(dataValue) ? 0 : Integer.valueOf(dataValue));
+//					avgViewNum += "".equals(dataValue) ? 0 : Integer.valueOf(dataValue);
+					break;
+				case "sessionTime":
+					String[] strasessiontime = dataValue.split(",");
+					for(int i=0;i<strasessiontime.length;i++){
+						strlist.get(i).setAvgSessionDuration("".equals(strasessiontime[i]) ? "0" : String.valueOf(Integer.valueOf(strasessiontime[i])  / 1000));
+					}
+//					ad.setAvgSessionDuration("".equals(dataValue) ? "0"
+//							: String.valueOf(Integer.valueOf(dataValue) / 1000));
+//					sessionTime += "".equals(dataValue) ? 0 : Integer.valueOf(dataValue) / 1000;
+					break;
+				case "bounceSessionCount":
+					String[] strasessioncount = dataValue.split(",");
+					for(int i=0;i<strasessioncount.length;i++){
+						strlist.get(i).setBounceRate("".equals(strasessioncount[i]) ? "0" : strasessioncount[i]);
+					}
+//					ad.setBounceRate("".equals(dataValue) ? "0" : dataValue);
+//					bounceRate += "".equals(dataValue) ? 0 : Double.valueOf(dataValue);
+					break;
+				}
+			}
+//			advertStatsList.add(ad);
+		}
+		
+		
 		Advert advertStats = new Advert();
 		advertStats.setUserViewNum(uvNum);
 		advertStats.setIpViewNum(ipNum);
@@ -201,7 +336,7 @@ public class FlowAnalysisAction extends BaseAction {
 		advertStats.setBounceRate(String.valueOf(bounceRate));
 		advertNumList.add(advertStats);
 		request.setAttribute("advertNumList", advertNumList);
-		request.setAttribute("advertStatsList", advertStatsList);
+		request.setAttribute("advertStatsList", strlist);
 		request.setAttribute("page", advert);// 分页信息
 	}
 }

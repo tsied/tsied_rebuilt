@@ -436,7 +436,7 @@
 							<tbody>
 								<c:forEach items="${advertStatsList}" var="ssortAdvert">
 									<tr>
-										<td>${ssortAdvert.adName}</td>
+										<td>${ssortAdvert.adAddr}</td>
 										<td><fmt:formatDate value="${ssortAdvert.adStartTime}" pattern="yyyy-MM-dd" /></td>
 										<td class="hidden-480">${ssortAdvert.adProject}</td>
 										<%--<td> ${ssortAdvert.clickNum} </td>--%>
