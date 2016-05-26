@@ -24,6 +24,8 @@ public abstract class DateUtils {
 
 	public static final Locale DEFAULT_LOCALE = Locale.CHINA;
 
+	public static final String ES_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+
 	private static final String[] sADatePatterns = { "yyyy-MM-dd HH:mm:ss", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm",
 			"MM/dd/yyyy HH:mm:ss", "yyyy.MM.dd HH:mm:ss", "yyyy-MM-dd", "yyyy/MM/dd", "MM/dd/yyyy", "yyyy.MM.dd" };
 
@@ -48,7 +50,7 @@ public abstract class DateUtils {
 	 * 格式化日期时间
 	 * 
 	 * @param format
-	 *            格式
+	 *            yyyy-MM-dd
 	 * @param locale
 	 *            地域
 	 * @return
@@ -381,4 +383,19 @@ public abstract class DateUtils {
 		return ca.getTime();
 	}
 
+	/**
+	 * 格式化日期时间
+	 * 
+	 * @param date
+	 *            时间
+	 * @param format
+	 *            HH:mm:ss
+	 * @param locale
+	 *            地域
+	 * @return
+	 */
+	public static String formatEsTime(Long date) {
+		SimpleDateFormat sdf = new SimpleDateFormat(ES_DATE_TIME_FORMAT, DEFAULT_LOCALE);
+		return sdf.format(getDate(new Timestamp(date)));
+	}
 }

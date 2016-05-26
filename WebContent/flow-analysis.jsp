@@ -50,6 +50,11 @@
 		$("#advertForm").submit();
 	}
 	
+	function pageSubmit(offset){
+		$("#advertForm").append($("<input>").attr("type", "hidden").attr("name", "offset").val(offset));
+		$("#advertForm").submit();
+	}
+	
 </script>
 <script src="<%=request.getContextPath() %>/assets/js/jquery.2.1.1.min.js"></script>
 
@@ -248,19 +253,20 @@
 					</ul>
 
 				</div>
+				
 				<div class="page-content">
+				<form class="form-horizontal form-addGame" id="advertForm" name="advertForm" action="<%=request.getContextPath()%>/flow" enctype="multipart/form-data">
 					<div class="page-header">
 						<h1>流量分析</h1>
 					</div>
 					<!-- /.page-header -->
 					<div class="row">
-						<div class="col-xs-12">
-							<form class="form-horizontal form-addGame" id="advertForm" name="advertForm" action="<%=request.getContextPath()%>/flow/findAdvert" enctype="multipart/form-data">
+						<div class="col-xs-12">							
 								<div class="form-group">
 									<label class="col-xs-12 col-sm-3 control-label">广告名称</label>
 									<div class="col-xs-12 col-sm-5">
 										<span class="block input-icon input-icon-right"> <input
-											type="text" name="adName" id="adName" value="${adName}"
+											type="text" name="adName" id="adName" value="${paramAdName}"
 											maxlength="12">
 										</span>
 									</div>
@@ -268,14 +274,14 @@
 								<div class="form-group">
 									<label class="col-xs-12 col-sm-3 control-label">所属项目</label>
 									<div class="col-xs-12 col-sm-5">
-										<span class="block input-icon input-icon-right"> <select
-											name="adProject" class="number" id="adProject">
+										<span class="block input-icon input-icon-right"> 
+										<select	name="adProject" class="number" id="adProject" >
 												<c:forEach items="${proList}" var="pro" varStatus="status">
-													<c:if test="${adProject==null }">
+													<c:if test="${paramAdProject==null }">
 														<option value="${pro.dicId}">${pro.dicValue }</option>
 													</c:if>
-													<c:if test="${adProject!=null }">
-														<option <c:if test="${ adProject == pro.dicId}">selected</c:if> value="${pro.dicId}">${pro.dicValue }</option>
+													<c:if test="${paramAdProject!=null }">
+														<option <c:if test="${ paramAdProject == pro.dicId}">selected</c:if> value="${pro.dicId}">${pro.dicValue }</option>
 													</c:if>
 												</c:forEach>
 										</select>
@@ -285,15 +291,15 @@
 								<div class="form-group">
 									<label class="col-xs-12 col-sm-3 control-label">广告类型</label>
 									<div class="col-xs-12 col-sm-5">
-										<span class="block input-icon input-icon-right"> 
+										<span class="block input-icon input-icon-right">
 										<select name="adType" class="number" id="adType">
 											<c:forEach items="${adTypeList}" var="advertType"
 												varStatus="status">
-												<c:if test="${adType==null }">
+												<c:if test="${paramAdType==null }">
 													<option value="${advertType.dicId}">${advertType.dicValue }</option>
 												</c:if>
-												<c:if test="${adType!=null }">
-													<option <c:if test="${ adType == advertType.dicId}">selected</c:if> value="${advertType.dicId}">${advertType.dicValue }</option>
+												<c:if test="${paramAdType!=null }">
+													<option <c:if test="${ paramAdType == advertType.dicId}">selected</c:if> value="${advertType.dicId}">${advertType.dicValue }</option>
 												</c:if>
 											</c:forEach>
 										</select>
@@ -306,42 +312,24 @@
 										<span class="block input-icon input-icon-right"> <select
 											name="adSatus" class="number" id="adSatus">
 												<c:forEach items="${adStatusList}" var="ad" varStatus="status">
-													<c:if test="${adSatus==null }">
+													<c:if test="${paramAdSatus==null }">
 														<option value="${ad.dicId}">${ad.dicValue }</option>
 													</c:if>
-													<c:if test="${adSatus!=null }">
-														<option <c:if test="${ adSatus == ad.dicId}">selected</c:if> value="${ad.dicId}">${ad.dicValue }</option>
+													<c:if test="${paramAdSatus!=null }">
+														<option <c:if test="${ paramAdSatus == ad.dicId}">selected</c:if> value="${ad.dicId}">${ad.dicValue }</option>
 													</c:if>
 												</c:forEach>
 										</select>
 										</span>
 									</div>
 								</div>
-								<%-- <div class="form-group">
-									<label class="col-xs-12 col-sm-3 control-label">开始后时间 从</label>
-									<div class="col-xs-12 col-sm-5" style="padding-left: 0;">
-										<span class="block input-icon input-icon-right">
-											<div class="col-xs-5 col-sm-4">
-												<div class="input-group">
-													<input type="text" name="startDay" value="${startDay}" class="form-control" maxlength="2">
-												</div>
-											</div>
-											<div style="float: left; width: 92px; text-align: center; line-height: 32px;">到</div>
-											<div class="col-xs-5 col-sm-4">
-												<div class="input-group">
-													<input type="text" name="endDay" value="${endDay}" class="form-control" maxlength="2">
-													</div></div>
-													<div style="float: left; width: 92px; text-align: center; line-height: 32px;">(天)</div>
-										</span>
-									</div>
-								</div> --%>
 								<div class="form-group">
 									<label class="col-xs-12 col-sm-3 control-label">时间周期 从</label>
 									<div class="col-xs-12 col-sm-5" style="padding-left: 0;">
 										<span class="block input-icon input-icon-right">
 											<div class="col-xs-5 col-sm-5">
 												<div class="input-group">
-													<input type="text" id="adStartTime" name="adStartTime" value="${adStartTime}"
+													<input type="text" id="adStartTime" name="adStartTime" value="${paramAdStartTime}"
 														class="form-control form-start" readonly="readonly">
 													<span class="input-group-addon" style="cursor: pointer;">
 														<i class="fa fa-calendar bigger-110"></i>
@@ -352,7 +340,7 @@
 												style="float: left; width: 92px; text-align: center; line-height: 32px;">到</div>
 											<div class="col-xs-5 col-sm-5" style="padding: 0;">
 												<div class="input-group">
-													<input type="text" id="adEndTime" name="adEndTime" value="${adEndTime}"
+													<input type="text" id="adEndTime" name="adEndTime" value="${paramAdEndTime}"
 														class="form-control form-end" readonly="readonly">
 													<span class="input-group-addon" style="cursor: pointer;">
 														<i class="fa fa-calendar bigger-110"></i>
@@ -388,7 +376,6 @@
 									<%--<th>点击量</th>--%>
 									<th>独立访问用户</th>
 									<th class="hidden-480">独立IP访问量</th>
-									<%--<th>目标页面点击量</th>--%>
 									<th class="hidden-480">会话数</th>
 									<th class="hidden-70">平均会话浏览页</th>
 									<th class="hidden-70">平均会话时长</th>
@@ -396,19 +383,15 @@
 								</tr>
 							</thead>
 							<tbody>
-								<c:forEach items="${advertNumList}" var="advert">
 									<tr>
-										<%--<td>${advert.clickNum}</td>--%>
-										<td>${advert.userViewNum}</td>
-										<td>${advert.ipViewNum}</td>
-										<%--<td>${advert.targetPageNum}</td>--%>
-										<td>${advert.sessionNum}</td>
-										<td>${advert.avgSessionViewNum}</td>
-										<td>${advert.avgSessionDuration}</td>
-										<td>${advert.bounceRate}</td>
+										<%--<td>${resultMap.sumPv}</td>--%>
+										<td>${resultMap.sumUv}</td>
+										<td>${resultMap.sumIpStats}</td>
+										<td>${resultMap.sumSessionStat}</td>
+										<td>${resultMap.avgReqPages}</td>
+										<td>${resultMap.avgSessionTime}</td>
+										<td>${resultMap.bounceRate}</td>
 									</tr>
-
-								</c:forEach>
 							</tbody>
 						</table>
 					</form>
@@ -434,9 +417,9 @@
 								</tr>
 							</thead>
 							<tbody>
-								<c:forEach items="${advertStatsList}" var="ssortAdvert">
+								<c:forEach items="${resultMap.hitResult}" var="ssortAdvert">
 									<tr>
-										<td>${ssortAdvert.adAddr}</td>
+										<td>${ssortAdvert.adName}</td>
 										<td><fmt:formatDate value="${ssortAdvert.adStartTime}" pattern="yyyy-MM-dd" /></td>
 										<td class="hidden-480">${ssortAdvert.adProject}</td>
 										<%--<td> ${ssortAdvert.clickNum} </td>--%>
@@ -451,33 +434,33 @@
 								</c:forEach>
 							</tbody>
 						</table>
-							<ul class="pagination pull-right no-margin col-xs-7">
-								<li class="prev disabled"><a href="#">共${page.pageTotal }页</a></li>
-								<li class="prev disabled"><a href="#">当前第${page.pageNo }页</a></li>
-								<c:if test="${page.haveFirst}">
-								</c:if>
-								<c:if test="${!page.haveFirst}">
-									<li class="prev disabled"><a href="#">首页</a></li>
-								</c:if>
-								<c:if test="${page.haveFirst}">
-									<li><a href="<%= request.getContextPath()%>/flow/pageForm?page=pre&offset=${page.pre }&adName=${adName}&adSatus=${adSatus}&adProject=${adProject}&adType=${adType}&adStartTime=${adStartTime}&adEndTime=${adEndTime}&startDay=${startDay}&endDay=${endDay}">上一页</a></li>
-								</c:if>
-								<c:if test="${!page.haveFirst}">
-									<li class="prev disabled"><a href="#">上一页</a></li>
-								</c:if>
-								<c:if test="${page.haveLast}">
-									<li><a href="<%= request.getContextPath()%>/flow/pageForm?page=next&offset=${page.next }&adName=${adName}&adSatus=${adSatus}&adProject=${adProject}&adType=${adType}&adStartTime=${adStartTime}&adEndTime=${adEndTime}&startDay=${startDay}&endDay=${endDay}">下一页</a></li>
-								</c:if>
-								<c:if test="${!page.haveLast}">
-									<li class="prev disabled"><a href="#">下一页</a></li>
-								</c:if>
-								<c:if test="${page.haveLast}">
-									<li><a href="<%= request.getContextPath()%>/flow/pageForm?page=pre&offset=${page.last }&adName=${adName}&adSatus=${adSatus}&adProject=${adProject}&adType=${adType}&adStartTime=${adStartTime}&adEndTime=${adEndTime}&startDay=${startDay}&endDay=${endDay}">尾页</a></li>
-								</c:if>
-								<c:if test="${!page.haveLast}">
-									<li class="prev disabled"><a href="#">尾页</a></li>
-								</c:if>
-							</ul>
+						<ul class="pagination pull-right no-margin col-xs-7">
+							<li class="prev disabled"><a href="#">共${page.pageTotal }页</a></li>
+							<li class="prev disabled"><a href="#">当前第${page.pageNo }页</a></li>
+							<c:if test="${page.haveFirst}">
+							</c:if>
+							<c:if test="${!page.haveFirst}">
+								<li class="prev disabled"><a href="#">首页</a></li>
+							</c:if>
+							<c:if test="${page.haveFirst}">
+								<li><a onClick="pageSubmit(${page.pre})">上一页</a></li>
+							</c:if>
+							<c:if test="${!page.haveFirst}">
+								<li class="prev disabled"><a href="#">上一页</a></li>
+							</c:if>
+							<c:if test="${page.haveLast}">
+								<li><a href="<%= request.getContextPath()%>/flow/pageForm?page=next&offset=${page.next }&adName=${adName}&adSatus=${adSatus}&adProject=${adProject}&adType=${adType}&adStartTime=${adStartTime}&adEndTime=${adEndTime}&startDay=${startDay}&endDay=${endDay}">下一页</a></li>
+							</c:if>
+							<c:if test="${!page.haveLast}">
+								<li class="prev disabled"><a href="#">下一页</a></li>
+							</c:if>
+							<c:if test="${page.haveLast}">
+								<li><a href="<%= request.getContextPath()%>/flow/pageForm?page=pre&offset=${page.last }&adName=${adName}&adSatus=${adSatus}&adProject=${adProject}&adType=${adType}&adStartTime=${adStartTime}&adEndTime=${adEndTime}&startDay=${startDay}&endDay=${endDay}">尾页</a></li>
+							</c:if>
+							<c:if test="${!page.haveLast}">
+								<li class="prev disabled"><a href="#">尾页</a></li>
+							</c:if>
+						</ul>
 					</form>
 				</div>
 			</div>
