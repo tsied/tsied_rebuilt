@@ -3,16 +3,13 @@
     "filtered": {
         "query": {
             "query_string": {
-            	<#if advertAddr??>
-            	"query": "${advertAddr}",
-            	<#else>
                 "query": "*",
-                </#if>
                 "analyze_wildcard": true
             }
         },
         "filter": {
             "bool": {
+			                     
                 "must": [
                     <#if advertAddrs??>
                     {
@@ -37,6 +34,10 @@
                         }
                     }
                 ],
+                	<#if advertAddr??>
+			             "should" : [ ${advertAddr} ],
+            		</#if>  
+                
                 "must_not": []
             }
         }

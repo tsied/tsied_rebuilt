@@ -16,6 +16,7 @@ import com.elk.entity.Menu;
 import com.elk.entity.User;
 import com.elk.es.ElasticClient;
 import com.elk.service.IAdvertService;
+import com.elk.service.IDomainService;
 import com.elk.service.IIndexService;
 import com.elk.utils.TemplateUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,6 +33,9 @@ public class BaseAction {
 	
 	@Resource
 	public IAdvertService advertService;
+	
+	@Resource
+	public IDomainService domainService;
 	
 	@Autowired
 	public ElasticClient client;

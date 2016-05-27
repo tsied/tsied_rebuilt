@@ -84,45 +84,50 @@ jQuery(function($) {
 							+ "&endDate="
 							+ $("#endDate").val(),
 					success : function(json) {
+						console.log(json)
+						var parms = {
+								chart : {
+									defaultSeriesType : 'line',
+									zoomType : 'x'
+								//type: 'area'
+								},
+								title : {
+									text : '内部项目带来指标项目占比'
+								},
+								subtitle : {
+									text : '占整个项目'
+								},
+								xAxis : {
+									categories : json.categories
+								},
+								yAxis : {
+									title : '占用百分比',
+									max : 100,
+									min : 0
+								},
+								tooltip : {
+									formatter:function(){
+										
+										var htm="";
+										htm+="总--"+this.x+":"+this.point.sum+"<br />";
+										htm+="项目--"+this.x+":"+this.point.usersum+"<br />";
+										htm+="所占百分比:" + Highcharts.numberFormat(this.y,'3', ',') + "% <br />";
+										return htm;
+									}
+
+								},
+								credits : {
+									enabled : false
+								},
+								series : [ {
+									name : '占有率',
+									data: json.data
+
+								} ]
+							}
 						//饼形统计
-						$('#s_chart').highcharts(
-								{
-									chart : {
-										defaultSeriesType : 'line',
-										zoomType : 'x'
-									//type: 'area'
-									},
-									title : {
-										text : '内部项目带来指标项目占比'
-									},
-									subtitle : {
-										text : '占整个项目'
-									},
-									xAxis : {
-										categories : json.categories
-									},
-									yAxis : {
-										title : '占用百分比',
-										max : 100,
-										min : 0
-									},
-									tooltip : {
-										formatter : function() {
-											return '<b>占用百分比'
-													+ '</b>: '
-													+ Highcharts.numberFormat(
-															this.y, 0, ',')
-													+ '%';
-										}
-									},
-									credits : {
-										enabled : false
-									},
-									series : [ {
-										name : '使用情况',
-										data : json.data
-									} ]
-								});
+						$('#s_chart').highcharts(parms);
+						//$('.highcharts-series-group').find('g:gt(1)').hide();
 					}
 				});
 	}
@@ -255,7 +260,7 @@ jQuery(function($) {
 										<span class="block input-icon input-icon-right"> 
 										<select name="projectType" class="number" id="projectType">
 												<c:forEach items="${proList}" var="pro" varStatus="status">
-													<c:if test="${projectType==null }">
+													<c:if test="${projectType==null}">
 														<option value="${pro.dicId}">${pro.dicValue }</option>
 													</c:if>
 													<c:if test="${projectType!=null }">

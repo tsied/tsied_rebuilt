@@ -85,8 +85,9 @@ public class UserAnalysisAction extends BaseAction {
 					+ "/user-analysis.customcache";
 			String content = client.readFile(templatePath);
 			indexName = indexService.getIndexTypeByValue(ad.getAdProject());
+			String adQuery = "{\"term\" : {\"source_url.raw\" : \"" + ad.getAdAddr() + "\"}}";
 			Script script = new Script(indexName.replace("all_", "pay_"), ad.getAdStartTime().getTime(), ad
-					.getAdEndTime().getTime(), ad.getAdAddr());
+					.getAdEndTime().getTime(), adQuery);
 			Map<String, String> resultMap = null;
 			try {
 

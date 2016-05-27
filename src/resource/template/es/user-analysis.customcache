@@ -67,17 +67,17 @@
           }
         },
         "6": {
-          "sum": {
+          "avg": {
             "field": "ydrate"
           }
         },
         "7": {
-          "sum": {
+          "avg": {
             "field": "tdrate"
           }
         },
         "8": {
-          "sum": {
+          "avg": {
             "field": "sdrate"
           }
         }
