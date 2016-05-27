@@ -53,21 +53,7 @@ public class FlowAnalysisAction extends BaseAction {
 		String paramAdStartTime = request.getParameter("adStartTime");// 广告投放开始时间
 		String paramAdEndTime = request.getParameter("adEndTime");// 广告投放结束时间时间
 
-		// 获取对应的广告信息
-		Advert queryAdvert = new Advert();
-		queryAdvert.setAdName(StringUtils.isNotBlank(paramAdName) ? paramAdName : null);
-		queryAdvert.setAdProject(StringUtils.isNotBlank(paramAdProject) && !"0".equals(paramAdProject) ? paramAdProject
-				: null);
-		queryAdvert.setAdType(StringUtils.isNotBlank(paramAdType) && !"0".equals(paramAdType) ? paramAdType : null);
-		queryAdvert
-				.setAdStatus(StringUtils.isNotBlank(paramAdSatus) && !"0".equals(paramAdSatus) ? paramAdSatus : null);
-		queryAdvert.setPageSize(100000);
-		List<Advert> advertAssortList = advertService.getAdvertList(queryAdvert);
-
-		// ES 查询
-		String esIndexName = StringUtils.isBlank(paramAdProject) || "0".equals(paramAdProject) ? "all_stats"
-				: indexService.getIndexByValue(Integer.parseInt(paramAdProject));// 匹配项目和ES
-																					// indexName
+		// 时间获取
 		Date adStartTime = DateUtils.daysDiff(-90);// ES日期查询区间
 		Date adEndTime = DateUtils.daysDiff(90);// ES日期查询区间
 		try {
@@ -78,6 +64,23 @@ public class FlowAnalysisAction extends BaseAction {
 			log.error("[paramAdStartTime=" + paramAdStartTime + ",paramAdEndTime=" + paramAdEndTime
 					+ "] can not be parese to Date.The default Date range is applied", e);
 		}
+
+		// 获取对应的广告信息
+		Advert queryAdvert = new Advert();
+		queryAdvert.setAdName(StringUtils.isNotBlank(paramAdName) ? paramAdName : null);
+		queryAdvert.setAdProject(StringUtils.isNotBlank(paramAdProject) && !"0".equals(paramAdProject) ? paramAdProject
+				: null);
+		queryAdvert.setAdType(StringUtils.isNotBlank(paramAdType) && !"0".equals(paramAdType) ? paramAdType : null);
+		queryAdvert
+				.setAdStatus(StringUtils.isNotBlank(paramAdSatus) && !"0".equals(paramAdSatus) ? paramAdSatus : null);
+		queryAdvert.setPageSize(100000);
+		queryAdvert.setStartDate(DateUtils.formatDate(adStartTime));
+		queryAdvert.setEndDate(DateUtils.formatDate(adEndTime));
+		List<Advert> advertAssortList = advertService.getAdvertList(queryAdvert);
+
+		// ES 查询
+		String esIndexName = StringUtils.isBlank(paramAdProject) || "0".equals(paramAdProject) ? "all_stats"
+				: indexService.getIndexByValue(Integer.parseInt(paramAdProject));// 匹配项目和ES
 		Map<String, Object> esAdData = elasticQueryService.flowRateQuery(esIndexName, adStartTime, adEndTime,
 				advertAssortList);
 
