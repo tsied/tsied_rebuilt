@@ -56,10 +56,11 @@ public class FlowAnalysisAction extends BaseAction {
 		// 获取对应的广告信息
 		Advert queryAdvert = new Advert();
 		queryAdvert.setAdName(StringUtils.isNotBlank(paramAdName) ? paramAdName : null);
-		queryAdvert.setAdProject(StringUtils.isNotBlank(paramAdProject) && "0".equals(paramAdProject) ? paramAdProject
+		queryAdvert.setAdProject(StringUtils.isNotBlank(paramAdProject) && !"0".equals(paramAdProject) ? paramAdProject
 				: null);
-		queryAdvert.setAdType(StringUtils.isNotBlank(paramAdType) && "0".equals(paramAdType) ? paramAdType : null);
-		queryAdvert.setAdStatus(StringUtils.isNotBlank(paramAdSatus) && "0".equals(paramAdSatus) ? paramAdSatus : null);
+		queryAdvert.setAdType(StringUtils.isNotBlank(paramAdType) && !"0".equals(paramAdType) ? paramAdType : null);
+		queryAdvert
+				.setAdStatus(StringUtils.isNotBlank(paramAdSatus) && !"0".equals(paramAdSatus) ? paramAdSatus : null);
 		queryAdvert.setPageSize(100000);
 		List<Advert> advertAssortList = advertService.getAdvertList(queryAdvert);
 
@@ -83,7 +84,8 @@ public class FlowAnalysisAction extends BaseAction {
 		// push data to view layer
 		mav.addObject("resultMap", esAdData);
 		mav.addObject("paramAdName", paramAdName);
-		mav.addObject("paramAdProject", paramAdProject);
+		mav.addObject("paramAdProject", StringUtils.isBlank(paramAdProject) || "0".equals(paramAdProject) ? 7
+				: paramAdProject);
 		mav.addObject("paramAdType", paramAdType);
 		mav.addObject("paramAdSatus", paramAdSatus);
 		mav.addObject("paramAdStartTime", DateUtils.formatDate(adStartTime));

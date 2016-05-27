@@ -16,6 +16,11 @@
 <link rel="stylesheet" href="<%=request.getContextPath() %>/assets/css/ace.min.css" class="ace-main-stylesheet" id="main-ace-style">
 <link rel="stylesheet" href="<%=request.getContextPath() %>/assets/css/jquery-ui.min.css" />
 <link rel="stylesheet" href="<%=request.getContextPath() %>/assets/css/jquery.datetimepicker.css" />
+
+<!-- dataTables -->
+<link rel="stylesheet" href="<%=request.getContextPath() %>/assets/js/bootstrap-datatable/dataTables.bootstrap.css">
+<link rel="stylesheet" href="<%=request.getContextPath() %>/assets/js/bootstrap-datatable/dataTables.responsive.css">
+
 <script src="<%=request.getContextPath() %>/assets/js/ace-extra.min.js"></script>
 <style type="text/css">
 .jqstooltip {
@@ -42,6 +47,10 @@
 	color: white;
 	font: 10px arial, san serif;
 	text-align: left;
+}
+
+#flowTab_wrapper {
+border:1px solid #e4e6e9;
 }
 </style>
 
@@ -80,16 +89,16 @@
 <script src="<%=request.getContextPath()%>/assets/js/ace.min.js"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.battatech.excelexport.js"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.battatech.excelexport.min.js"></script>
-<script src="<%=request.getContextPath()%>/js/jquery.dataTables.min.js"></script>
-<script src="<%=request.getContextPath()%>/js/dataTables.buttons.min.js"></script>
-<script src="<%=request.getContextPath()%>/js/buttons.flash.min.js"></script>
-<script src="<%=request.getContextPath()%>/js/jszip.min.js"></script>
-<script src="<%=request.getContextPath()%>/js/pdfmake.min.js"></script>
-<script src="<%=request.getContextPath()%>/js/vfs_fonts.js"></script>
-<script src="<%=request.getContextPath()%>/js/buttons.html5.min.js"></script>
-<script src="<%=request.getContextPath()%>/js/buttons.print.min.js"></script>
-<link rel="stylesheet" href="<%=request.getContextPath() %>/css/jquery.dataTables.min.css">
-<link rel="stylesheet" href="<%=request.getContextPath() %>/css/buttons.dataTables.min.css">
+<!-- dataTables -->
+<script src="<%=request.getContextPath()%>/assets/js/bootstrap-datatable/jquery.dataTables.min.js"></script>
+<script src="<%=request.getContextPath()%>/assets/js/bootstrap-datatable/dataTables.bootstrap.min.js"></script>
+<script src="<%=request.getContextPath()%>/assets/js/bootstrap-datatable/dataTables.buttons.min.js"></script>
+<script src="<%=request.getContextPath()%>/assets/js/bootstrap-datatable/buttons.bootstrap.min.js"></script>
+<script src="<%=request.getContextPath()%>/assets/js/bootstrap-datatable/jszip.min.js"></script>
+<script src="<%=request.getContextPath()%>/assets/js/bootstrap-datatable/buttons.print.min.js"></script>
+<script src="<%=request.getContextPath()%>/assets/js/bootstrap-datatable/buttons.html5.min.js"></script>
+<script src="<%=request.getContextPath()%>/assets/js/bootstrap-datatable/pdfmake.min.js"></script>
+<script src="<%=request.getContextPath()%>/assets/js/bootstrap-datatable/vfs_fonts.js"></script>
 
 <script type="text/javascript">
 	jQuery(function($) {
@@ -119,12 +128,7 @@
 		});
 
 		
-		 $('#flowTab').DataTable( {
-		        dom: 'Bfrtip',
-		        buttons: [
-		            'csv', 'excel'
-		        ]
-		    } );
+		 $('#flowTab').DataTable();
 	
 	})
 </script>
@@ -277,10 +281,10 @@
 										<span class="block input-icon input-icon-right"> 
 										<select	name="adProject" class="number" id="adProject" >
 												<c:forEach items="${proList}" var="pro" varStatus="status">
-													<c:if test="${paramAdProject==null }">
+													<c:if test="${paramAdProject==null && pro.dicId!=9 && pro.dicId!=0 }">
 														<option value="${pro.dicId}">${pro.dicValue }</option>
 													</c:if>
-													<c:if test="${paramAdProject!=null }">
+													<c:if test="${paramAdProject!=null && pro.dicId!=9 && pro.dicId!=0}">
 														<option <c:if test="${ paramAdProject == pro.dicId}">selected</c:if> value="${pro.dicId}">${pro.dicValue }</option>
 													</c:if>
 												</c:forEach>
@@ -399,8 +403,7 @@
 					<form id="game_form" action="" method="post">
 						<input type="hidden" id="gid" name="gid" value=""> <input
 							type="hidden" id="status" name="status" value="">
-						<table id="flowTab"
-							class="table table-striped table-bordered table-hover table-gameManager">
+						<table id="flowTab" class="table table-striped table-bordered table-hover table-gameManager">
 							<thead>
 								<tr>
 									<th>广告名称</th>
@@ -434,33 +437,6 @@
 								</c:forEach>
 							</tbody>
 						</table>
-						<ul class="pagination pull-right no-margin col-xs-7">
-							<li class="prev disabled"><a href="#">共${page.pageTotal }页</a></li>
-							<li class="prev disabled"><a href="#">当前第${page.pageNo }页</a></li>
-							<c:if test="${page.haveFirst}">
-							</c:if>
-							<c:if test="${!page.haveFirst}">
-								<li class="prev disabled"><a href="#">首页</a></li>
-							</c:if>
-							<c:if test="${page.haveFirst}">
-								<li><a onClick="pageSubmit(${page.pre})">上一页</a></li>
-							</c:if>
-							<c:if test="${!page.haveFirst}">
-								<li class="prev disabled"><a href="#">上一页</a></li>
-							</c:if>
-							<c:if test="${page.haveLast}">
-								<li><a href="<%= request.getContextPath()%>/flow/pageForm?page=next&offset=${page.next }&adName=${adName}&adSatus=${adSatus}&adProject=${adProject}&adType=${adType}&adStartTime=${adStartTime}&adEndTime=${adEndTime}&startDay=${startDay}&endDay=${endDay}">下一页</a></li>
-							</c:if>
-							<c:if test="${!page.haveLast}">
-								<li class="prev disabled"><a href="#">下一页</a></li>
-							</c:if>
-							<c:if test="${page.haveLast}">
-								<li><a href="<%= request.getContextPath()%>/flow/pageForm?page=pre&offset=${page.last }&adName=${adName}&adSatus=${adSatus}&adProject=${adProject}&adType=${adType}&adStartTime=${adStartTime}&adEndTime=${adEndTime}&startDay=${startDay}&endDay=${endDay}">尾页</a></li>
-							</c:if>
-							<c:if test="${!page.haveLast}">
-								<li class="prev disabled"><a href="#">尾页</a></li>
-							</c:if>
-						</ul>
 					</form>
 				</div>
 			</div>

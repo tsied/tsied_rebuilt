@@ -150,8 +150,8 @@ public class ElasticQueryServiceImpl {
 		Double sumUv = 0.0;
 		Double sumIpStats = 0.0;
 		Double sumSessionStat = 0.0;
-		Double avgSessionTime = 0.0;
-		Double avgReqPages = 0.0;
+		Double sumSessionTime = 0.0;
+		Double sumReqPages = 0.0;
 		Double sumExitSessionCount = 0.0;
 		Double sumBounceSessionCount = 0.0;
 
@@ -180,10 +180,11 @@ public class ElasticQueryServiceImpl {
 			ad.setSessionNum(sessionNum);
 
 			Double reqPages = avgReqPagesAggs.getValue();
-			ad.setAvgSessionViewNum(reqPages == null ? 0 : reqPages.intValue());
+			ad.setAvgSessionViewNum(reqPages == null || reqPages.equals(Double.NaN) ? 0 : reqPages.intValue());
 
 			Double sessiontime = avgSessionTimeAggs.getValue();
-			ad.setAvgSessionDuration(String.format("%.0f", sessiontime / 1000));
+			ad.setAvgSessionDuration(sessiontime == null || sessiontime.equals(Double.NaN) ? "0.0" : String.format(
+					"%.0f", sessiontime / 1000));
 
 			Double bounceSessionCount = sumBounceSessionCountAggs.getValue();
 			ad.setBounceRate(sessionNum == 0 ? "0" : String.format("%.4f", (bounceSessionCount / sessionNum)));
@@ -193,8 +194,8 @@ public class ElasticQueryServiceImpl {
 			sumUv += sumUvAggs.value();
 			sumIpStats += sumIpStatsAggs.value();
 			sumSessionStat += sumSessionStatAggs.value();
-			avgSessionTime += avgSessionTimeAggs.value();
-			avgReqPages += avgReqPagesAggs.value();
+			sumSessionTime += (sessiontime == null || sessiontime.equals(Double.NaN)) ? 0.0 : sessiontime;
+			sumReqPages += (reqPages == null || reqPages.equals(Double.NaN)) ? 0.0 : reqPages;
 			sumExitSessionCount += sumExitSessionCountAggs.value();
 			sumBounceSessionCount += sumBounceSessionCountAggs.value();
 		}
@@ -204,13 +205,13 @@ public class ElasticQueryServiceImpl {
 		result.put("sumUv", sumUv);
 		result.put("sumIpStats", sumIpStats);
 		result.put("sumSessionStat", sumSessionStat);
-		result.put("avgSessionTime", String.format("%.0f", avgSessionTime / 1000));
-		result.put("avgReqPages", String.format("%.2f", avgReqPages));
+		result.put("avgSessionTime", String.format("%.0f", sumSessionTime / (souceTerms.getBuckets().size() * 1000)));
+		result.put("avgReqPages", String.format("%.2f", sumReqPages / souceTerms.getBuckets().size()));
 		result.put("sumExitSessionCount", sumExitSessionCount);
 		result.put("sumBounceSessionCount", sumBounceSessionCount);
 
 		result.put("bounceRate",
-				String.format("%.4f", sumSessionStat == 0 ? "0" : sumBounceSessionCount / sumSessionStat));
+				String.format("%.4f", sumSessionStat == 0 ? 0.0 : sumBounceSessionCount / sumSessionStat));
 
 		return result;
 	}
