@@ -224,12 +224,7 @@ jQuery(function($) {
 								<li class="active">
 									<a data-toggle="tab" href="#one" aria-expanded="true">关键指标查询</a>
 								</li>
-								<li class="">
-									<a data-toggle="tab" href="#two" aria-expanded="false">周数据指标项</a>
-								</li>
-								<li class="">
-									<a data-toggle="tab" href="#three" aria-expanded="false">月数据指标项</a>
-								</li>
+
 							</ul>
 
 							<div class="tab-content">
@@ -253,7 +248,7 @@ jQuery(function($) {
 															<select id="cruxAdProject" name="cruxAdProject" class="number"
 																id="cruxAdProject">
 																	<c:forEach items="${proList}" var="pro" varStatus="status">
-																		<c:if test="${cruxAdProject==null }">
+																		<c:if test="${cruxAdProject==null && pro.dicId !=9}">
 																			<option value="${pro.dicId}">${pro.dicValue }</option>
 																		</c:if>
 																		<c:if test="${cruxAdProject!=null }">
