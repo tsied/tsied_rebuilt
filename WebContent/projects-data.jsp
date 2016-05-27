@@ -260,10 +260,10 @@ jQuery(function($) {
 										<span class="block input-icon input-icon-right"> 
 										<select name="projectType" class="number" id="projectType">
 												<c:forEach items="${proList}" var="pro" varStatus="status">
-													<c:if test="${projectType==null}">
+													<c:if test="${projectType==null && pro.dicId!=5 && pro.dicId!=7 && pro.dicId!=8}">
 														<option value="${pro.dicId}">${pro.dicValue }</option>
 													</c:if>
-													<c:if test="${projectType!=null }">
+													<c:if test="${projectType!=null && pro.dicId!=9}">
 														<option <c:if test="${ projectType == pro.dicId}">selected</c:if> value="${pro.dicId}">${pro.dicValue }</option>
 													</c:if>
 												</c:forEach>
