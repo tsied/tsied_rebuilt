@@ -1,6 +1,7 @@
 package com.elk.dao.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
@@ -18,6 +19,12 @@ public class AdvertDao extends BaseDao implements IAdvertDao{
 	@Override
 	public List<Advert> getAdvertList(Advert advert) {
 		return this.getSqlSession().selectList("advertList",advert);
+	}
+	
+	@Override
+	public List<Map<String, Object>> getAdvertMap(Advert advert) {
+		List<Map<String, Object>> tmp = this.getSqlSession().selectList("advertList", advert);
+		return tmp;
 	}
 	
 	@Override

@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>tsied_front</groupId>
-	<artifactId>tsied_front</artifactId>
+	<groupId>tsied_rebuilt</groupId>
+	<artifactId>tsied_rebuilt</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<build>
@@ -14,6 +14,7 @@
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>
+					<encoding>utf8</encoding>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -28,7 +29,18 @@
 	</build>
 	<dependencies>
 
-
+	    <dependency>
+	      <groupId>javax.servlet.jsp</groupId>
+	      <artifactId>javax.servlet.jsp-api</artifactId>
+	      <version>2.3.1</version>
+	      <scope>provided</scope>
+	    </dependency>
+	    <dependency>
+	      <groupId>javax.servlet</groupId>
+	      <artifactId>javax.servlet-api</artifactId>
+	      <version>3.0.1</version>
+	      <scope>provided</scope>
+	    </dependency>
 		<!-- elasticsearch -->
 		<!-- <dependency> <groupId>org.elasticsearch</groupId> <artifactId>elasticsearch</artifactId> 
 			<version>2.1.1</version> </dependency> -->

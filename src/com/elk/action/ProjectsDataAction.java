@@ -552,7 +552,13 @@ public class ProjectsDataAction extends BaseAction{
 		Map<String,Double>  nrlMap = new HashMap<String,Double>();
 		nrlMap.put("sum", Double.parseDouble(df.format(household.getNewRegisterUserNum())));
 		nrlMap.put("usersum", Double.parseDouble(df.format(userHousehold.getNewRegisterUserNum())));
-		nrlMap.put("y", Double.parseDouble(df.format(userHousehold.getNewRegisterUserNum()/(household.getNewRegisterUserNum() * 1.0))) * 100);
+//		nrlMap.put("y", Double.parseDouble(df.format(userHousehold.getNewRegisterUserNum()/(household.getNewRegisterUserNum() * 1.0))) * 100);
+		if (Double.parseDouble(df.format(household.getNewRegisterUserNum())) != 0){
+			nrlMap.put("y", Double.parseDouble(df.format(userHousehold.getNewRegisterUserNum()/(household.getNewRegisterUserNum() * 1.0))) * 100);
+		}else{
+			nrlMap.put("y", Double.parseDouble(df.format(household.getNewRegisterUserNum())));
+		}
+		
 		datas.add(nrlMap);
 		
 		Map<String,Double>  luMap = new HashMap<String,Double>();

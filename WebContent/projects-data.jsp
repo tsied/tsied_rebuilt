@@ -75,7 +75,7 @@ jQuery(function($) {
 		$.ajax({
 					dataType : 'json',
 					contentType : "application/json;charset=UTF-8",
-					url : "/tsied_front/project/find-projects-data?projectType="
+					url : "/tsied_rebuilt/project/find-projects-data?projectType="
 							+ $("#projectType").val()
 							+ "&adProject="
 							+ $("#adProject").val()

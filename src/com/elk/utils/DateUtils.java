@@ -281,6 +281,23 @@ public abstract class DateUtils {
 		localTime.add(Calendar.DAY_OF_MONTH, -1);
 		return formatDateTime(localTime, format, DEFAULT_LOCALE);
 	}
+	
+	/**
+	 * 时间计算
+	 * 
+	 * @param date
+	 * @param DateField
+	 *            计算间隔 单位的定义（天/月/年……）Calendar.*
+	 * @param num
+	 *            间隔变量
+	 * @return
+	 */
+	public static Date addDate(Date date, int DateField, int num) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(DateField, num);
+		return cal.getTime();
+	}
 
 	/**
 	 * 对指定时间进行增减操作后返回指定格式的时间串
@@ -397,5 +414,13 @@ public abstract class DateUtils {
 	public static String formatEsTime(Long date) {
 		SimpleDateFormat sdf = new SimpleDateFormat(ES_DATE_TIME_FORMAT, DEFAULT_LOCALE);
 		return sdf.format(getDate(new Timestamp(date)));
+	}
+	
+	public static Date getDateBegin(Date current) {
+		return parseDateTime(formatDate(current) + " 00:00:00");
+	}
+
+	public static Date getDateEnd(Date current) {
+		return parseDateTime(formatDate(current) + " 23:59:59");
 	}
 }

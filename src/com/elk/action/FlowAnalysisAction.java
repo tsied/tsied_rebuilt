@@ -2,6 +2,7 @@ package com.elk.action;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,11 +15,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.elk.entity.Advert;
 import com.elk.service.impl.ElasticQueryServiceImpl;
 import com.elk.utils.DateUtils;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @desc 流量分析
@@ -34,6 +37,10 @@ public class FlowAnalysisAction extends BaseAction {
 	@Autowired
 	private ElasticQueryServiceImpl elasticQueryService;
 
+	public static ObjectMapper mapper = new ObjectMapper();
+	
+	Integer successStats = 1;
+	Integer failStats = 0;
 	/**
 	 * 
 	 * @param request
@@ -41,10 +48,12 @@ public class FlowAnalysisAction extends BaseAction {
 	 * @throws IOException
 	 */
 	@RequestMapping()
-	public ModelAndView defaultHandler(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		initPage(request, response);
-		ModelAndView mav = new ModelAndView();
-
+	public @ResponseBody JsonNode defaultHandler(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//		initPage(request, response);
+		Map<String,Object> pageMap = initPage(request,response);
+		Map<String, Object> pageData = new HashMap<String, Object>();
+		String result;
+		
 		// 获取所需的请求参数
 		String paramAdName = request.getParameter("adName");// 广告类型
 		String paramAdProject = request.getParameter("adProject");// 广告所属项目
@@ -74,28 +83,34 @@ public class FlowAnalysisAction extends BaseAction {
 		queryAdvert
 				.setAdStatus(StringUtils.isNotBlank(paramAdSatus) && !"0".equals(paramAdSatus) ? paramAdSatus : null);
 		queryAdvert.setPageSize(100000);
-		queryAdvert.setStartDate(DateUtils.formatDate(adStartTime));
-		queryAdvert.setEndDate(DateUtils.formatDate(adEndTime));
+//		queryAdvert.setStartDate(DateUtils.formatDate(adStartTime));
+//		queryAdvert.setEndDate(DateUtils.formatDate(adEndTime));
 		List<Advert> advertAssortList = advertService.getAdvertList(queryAdvert);
 
 		// ES 查询
 		String esIndexName = StringUtils.isBlank(paramAdProject) || "0".equals(paramAdProject) ? "all_stats"
 				: indexService.getIndexByValue(Integer.parseInt(paramAdProject));// 匹配项目和ES
 		Map<String, Object> esAdData = elasticQueryService.flowRateQuery(esIndexName, adStartTime, adEndTime,
-				advertAssortList);
+				advertAssortList, "ad");
 
 		// push data to view layer
-		mav.addObject("resultMap", esAdData);
-		mav.addObject("paramAdName", paramAdName);
-		mav.addObject("paramAdProject", StringUtils.isBlank(paramAdProject) || "0".equals(paramAdProject) ? 7
-				: paramAdProject);
-		mav.addObject("paramAdType", paramAdType);
-		mav.addObject("paramAdSatus", paramAdSatus);
-		mav.addObject("paramAdStartTime", DateUtils.formatDate(adStartTime));
-		mav.addObject("paramAdEndTime", DateUtils.formatDate(adEndTime));
-		mav.setViewName("flow-analysis");
-
-		return mav;
+		pageMap.put("resultMap", esAdData);
+//		mav.addObject("resultMap", esAdData);
+//		mav.addObject("paramAdName", paramAdName);
+//		mav.addObject("paramAdProject", StringUtils.isBlank(paramAdProject) || "0".equals(paramAdProject) ? 7
+//				: paramAdProject);
+//		mav.addObject("paramAdType", paramAdType);
+//		mav.addObject("paramAdSatus", paramAdSatus);
+//		mav.addObject("paramAdStartTime", DateUtils.formatDate(adStartTime));
+//		mav.addObject("paramAdEndTime", DateUtils.formatDate(adEndTime));
+//		mav.setViewName("flow-analysis");
+		pageData.put("data", pageMap);
+		pageData.put("status", successStats);
+		pageData.put("message", "flow请求成功");
+		
+		result = mapper.writeValueAsString(pageData);
+		
+		return mapper.readTree(result);
 
 	}
 }

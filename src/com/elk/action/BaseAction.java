@@ -1,6 +1,7 @@
 package com.elk.action;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,9 @@ public class BaseAction {
 	 * @param response
 	 * @throws IOException
 	 */
-	public void initPage(HttpServletRequest request,HttpServletResponse response) throws IOException{
+	public Map <String, Object> initPage(HttpServletRequest request,HttpServletResponse response) throws IOException{
+		Map<String, Object> pageMap = new HashMap<String, Object>();
+		
 		List<Map<String,String>> responsMenuList = getMenuList();
 		request.setAttribute("responsMenuList", responsMenuList);//系统菜单
 		
@@ -66,6 +69,15 @@ public class BaseAction {
 		
 		List<Dic> indexTypeList = indexService.getDicList("indexType");
 		request.setAttribute("indexTypeList", indexTypeList);//指标类型
+		
+		
+		pageMap.put("menulist", responsMenuList);
+		pageMap.put("adstatuslist", adStatusList);
+		pageMap.put("prolist", proList);
+		pageMap.put("adtypelist", adTypeList);
+		pageMap.put("socialsoftlist", socialSoftList);
+		pageMap.put("indextypelist", indexTypeList);
+		return pageMap;
 	}
 	
 	/**

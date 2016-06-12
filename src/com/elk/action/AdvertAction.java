@@ -2,6 +2,7 @@ package com.elk.action;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +26,7 @@ import com.elk.service.IIndexService;
 import com.elk.utils.DateUtils;
 import com.elk.utils.StringUtil;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
 @RequestMapping("/ad")
@@ -38,20 +41,71 @@ public class AdvertAction extends BaseAction{
 	@Autowired
 	private ElasticClient client;
 	
+	Integer successStats = 1;
+	Integer failStats = 0;
+	
 	
 	@RequestMapping(value="/index")
 	public String  index(HttpServletRequest request,HttpServletResponse response) throws IOException{
-			initPage(request,response);
+			Map<String,Object> pageMap = initPage(request,response);
+			response.addHeader("Access-Control-Allow-Origin","*");
+//			Advert advert = advertTerms(request);
+//			int count = 0;
+//			count = advertService.getAdvertCount(advert);
+//			advert.setTotal(count);
+//			advert.setCurrentTotal(count);
+//			List<Advert> advertList = advertService.getAdvertList(advert);
+//			List<Map<String,Object>> advertList = advertService.getAdvertMap(advert);
+//			ObjectMapper mapper = new ObjectMapper();
+//			String result = mapper.writeValueAsString(advertList);
+//			System.out.println(result);
+//			request.setAttribute("advertList", advertList);//广告信息
+//			request.setAttribute("page", advert);//分页信息
+//			
+//			pageMap.put("advertlist", advertList);
+//			String result = mapper.writeValueAsString(pageMap);
+//			System.out.println(mapper.readTree(result));
+		return "ad";
+	}
+	
+	@RequestMapping(value="/getdata")
+	public @ResponseBody JsonNode  getdata(HttpServletRequest request,HttpServletResponse response) throws IOException{
+			Map<String, Object> pageData = new HashMap<String, Object>();		
+			
+			response.addHeader("Access-Control-Allow-Origin","*");
+			Map<String,Object> pageMap = initPage(request,response);
 			Advert advert = advertTerms(request);
 			int count = 0;
 			count = advertService.getAdvertCount(advert);
 			advert.setTotal(count);
 			advert.setCurrentTotal(count);
-			List<Advert> advertList = advertService.getAdvertList(advert);
-			request.setAttribute("advertList", advertList);//广告信息
-			request.setAttribute("page", advert);//分页信息
-		return "ad";
+//			List<Advert> advertList = advertService.getAdvertList(advert);
+			
+//			Integer adId = null;
+//			if(request.getParameter("adId")!=null){
+//				adId = Integer.parseInt(request.getParameter("adId"));
+//				advert.setAdId(adId);
+//				pageData.put("status", 1);
+//				pageData.put("message", "修改成功");
+//			}
+			
+			List<Map<String,Object>> advertList = advertService.getAdvertMap(advert);
+			ObjectMapper mapper = new ObjectMapper();
+//			String result = mapper.writeValueAsString(advertList);
+//			System.out.println(result);
+//			request.setAttribute("advertList", advertList);//广告信息
+//			request.setAttribute("page", advert);//分页信息
+												
+			pageMap.put("advertlist", advertList);			
+			pageData.put("status", successStats);
+			pageData.put("message", " ");
+			pageData.put("data", pageMap);
+			String result = mapper.writeValueAsString(pageData);
+			System.out.println(mapper.readTree(result));
+			
+		return mapper.readTree(result);
 	}
+	
 	
 	/**
 	 * 分页
@@ -78,52 +132,146 @@ public class AdvertAction extends BaseAction{
 	}	
 
 	
-	@RequestMapping(value="/add", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value="/addormodify", produces = "application/json;charset=UTF-8")
 	public @ResponseBody JsonNode  addAdvert(HttpServletRequest request,HttpServletResponse response) throws IOException{
 			Advert advert = new Advert();
-			advert.setAdName(request.getParameter("adName"));
-			advert.setAdDomain(request.getParameter("adDomain")!= null ?request.getParameter("adDomain"):"");
-			advert.setAdProject(request.getParameter("adProject")!=null?request.getParameter("adProject"):"");
-			advert.setAdType(request.getParameter("adType")!=null?request.getParameter("adType"):"");
-			advert.setAdSocialSoftware(request.getParameter("socialSoft")!=null?request.getParameter("socialSoft"):"");
-			advert.setAdCostBudget(request.getParameter("adCostBudget")!=null?request.getParameter("adCostBudget"):"");
-			advert.setAdStatus(request.getParameter("adStatus") != null?request.getParameter("adStatus"):"");
-			advert.setAdAddr(request.getParameter("adAddr") != null?request.getParameter("adAddr"):"");
-			advert.setAdStartTime(DateUtils.parseDate(request.getParameter("adStartTime")));
-			advert.setAdEndTime(DateUtils.parseDate(request.getParameter("adEndTime")));
-			advertService.saveAdvert(advert);
-			setPage(request, response);
-		return mapper.readTree("{\"success\":\"success\"}");
-	}
-	
-	@RequestMapping(value="/modify", produces = "application/json;charset=UTF-8")
-	public @ResponseBody JsonNode  modifyAdvert(HttpServletRequest request,HttpServletResponse response) throws IOException{
-		Advert advert = new Advert();
-		advert.setAdId(request.getParameter("adId")!=null?Integer.parseInt(request.getParameter("adId")):0);
-		advert.setAdName(request.getParameter("adName"));
-		advert.setAdProject(request.getParameter("adProject")!=null?request.getParameter("adProject"):"");
-		advert.setAdType(request.getParameter("adType")!=null?request.getParameter("adType"):"");
-		advert.setAdSocialSoftware(request.getParameter("socialSoft")!=null?request.getParameter("socialSoft"):"");
-		advert.setAdCostBudget(request.getParameter("adCostBudget")!=null?request.getParameter("adCostBudget"):"");
-		advert.setAdStatus(request.getParameter("adStatus") != null?request.getParameter("adStatus"):"");
-		advert.setAdAddr(request.getParameter("adAddr") != null?request.getParameter("adAddr"):"");
-		advert.setAdDomain(request.getParameter("adDomain")!= null ?request.getParameter("adDomain"):"");
-		advert.setAdStartTime(request.getParameter("adStartTime")!=null?DateUtils.parseDate(request.getParameter("adStartTime")):new Date());
-		advert.setAdEndTime(request.getParameter("adEndTime")!=null?DateUtils.parseDate(request.getParameter("adEndTime")):new Date());
-		advertService.modifyAdvert(advert);
-		setPage(request, response);
-		return mapper.readTree("{\"success\":\"success\"}");
+			Map<String, Object> pageData = new HashMap<String, Object>();
+			String result;
+			List<String> errorMsg = new ArrayList<String>();
+			response.addHeader("Access-Control-Allow-Origin","*");
+			Integer adId = null;
+			String adName = "";
+			String adDomain = "";
+			String adProject= "";
+			String adType = "";
+			String adSocialSoftware = "";
+			String adCostBudget = "";
+			String adStatus = "";
+			String adAddr = "";
+			String adStartTime = "";
+			String adEndTime = "";
+						
+			if(request.getParameter("adName")!=""){
+				adName = request.getParameter("adName");
+			}else{
+				errorMsg.add("广告名称不能为空");
+			} 
+			
+			if(request.getParameter("adDomain")!=""){
+				adDomain = request.getParameter("adDomain");
+			}else{
+				errorMsg.add("投放域名不能为空");
+			} 
+			
+			if(request.getParameter("adProject")!=""){
+				adProject = request.getParameter("adProject");
+			}else{
+				errorMsg.add("所属项目不能为空");
+			} 
+			
+			if(request.getParameter("adType")!=""){
+				adType = request.getParameter("adType");
+			}else{
+				errorMsg.add("广告类型不能为空");
+			}
+			
+			if(request.getParameter("adSocialSoftware")!=""){
+				adSocialSoftware = request.getParameter("adSocialSoftware");
+			}else{
+				errorMsg.add("社交软件不能为空");
+			}
+			
+			if(request.getParameter("adCostBudget")!=""){
+				adCostBudget = request.getParameter("adCostBudget");
+			}else{
+				errorMsg.add("成本预算不能为空");
+			}
+			
+			if(request.getParameter("adStatus")!=""){
+				adStatus = request.getParameter("adStatus");
+			}else{
+				errorMsg.add("广告状态不能为空");
+			}
+			
+			if(request.getParameter("adAddr")!=""){
+				adAddr = request.getParameter("adAddr");
+			}else{
+				errorMsg.add("广告地址不能为空");
+			}
+			
+			if(request.getParameter("adStartTime")!=""){
+				adStartTime = request.getParameter("adStartTime");
+			}else{
+				errorMsg.add("广告开始时间不能为空");
+			}
+			
+			if(request.getParameter("adEndTime")!=""){
+				adEndTime = request.getParameter("adEndTime");
+			}else{
+				errorMsg.add("广告结束时间不能为空");
+			}
+						
+			advert.setAdName(adName);
+			advert.setAdDomain(adDomain);
+			advert.setAdProject(adProject);
+			advert.setAdType(adType);
+			advert.setAdSocialSoftware(adSocialSoftware);
+			advert.setAdCostBudget(adCostBudget);
+			advert.setAdStatus(adStatus);
+			advert.setAdAddr(adAddr);
+			advert.setAdStartTime(DateUtils.parseDate(adStartTime));
+			advert.setAdEndTime(DateUtils.parseDate(adEndTime));
+			
+			if(request.getParameter("adId")!=null){
+				adId = Integer.parseInt(request.getParameter("adId"));
+				advert.setAdId(adId);
+				advertService.modifyAdvert(advert);
+				pageData.put("status", successStats);
+				pageData.put("message", "修改成功");
+			}else{			
+				if (errorMsg.size() > 0){
+					pageData.put("status", failStats);
+					String adErrorMsgQuery = StringUtils.join(errorMsg, ",");
+					pageData.put("message", adErrorMsgQuery);
+	//				result = mapper.writeValueAsString(pageData);
+				}else{
+								
+					List<Advert> adList = advertService.getAdvertList(advert);
+					if (adList.size() > 0){
+						pageData.put("status", failStats);
+						pageData.put("message", "添加的广告已存在");
+					}else{
+						advertService.saveAdvert(advert);
+						pageData.put("status", successStats);
+						pageData.put("message", "添加成功");
+					}
+					
+													
+				}
+			}
+						
+			result = mapper.writeValueAsString(pageData);
+			
+			return mapper.readTree(result);
+//			setPage(request, response);
+		
 	}
 	
 	
 	@RequestMapping(value="/del", produces = "application/json;charset=UTF-8")
 	public @ResponseBody JsonNode delAdvert(HttpServletRequest request,HttpServletResponse response) throws IOException{
 		Advert advert = new Advert();
+		Map<String, Object> pageData = new HashMap<String, Object>();
+		String result;
+		response.addHeader("Access-Control-Allow-Origin","*");
 		advert.setAdId(Integer.parseInt(request.getParameter("adId")));
 		advertService.delAdvert(advert);
-		initPage(request,response);
-		setPage(request, response);
-		return mapper.readTree("{\"success\":\"success\"}");
+		pageData.put("status", successStats);
+		pageData.put("message", "删除成功");
+		result = mapper.writeValueAsString(pageData);
+//		initPage(request,response);
+//		setPage(request, response);
+		return mapper.readTree(result);
 	}
 	
 	/**

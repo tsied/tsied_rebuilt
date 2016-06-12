@@ -133,6 +133,71 @@
 			
 		</where>
 	</select>
+	
+	<!-- 获取广告集 -->
+	<select id="advertMap" resultType="java.util.HashMap" parameterType="_advert">
+		
+		select 
+			ad_id  adId,
+			ad_name adName,
+			(select dic_value from tsied_sys_dic where id = ad_status) adStatus,
+			(select dic_value from tsied_sys_dic where id = ad_project) adProject,
+			(select dic_value from tsied_sys_dic where id = ad_type) adType,
+			ad_addr adAddr,
+			ad_domain adDomain,
+			(select dic_value from tsied_sys_dic where id = ad_social_software) adSocialSoftware,
+			ad_cost_budget adCostBudget,
+			ad_start_time adStartTime,
+			ad_end_time adEndTime
+		from tsied_advert
+		<where>
+		    1 = 1
+		    <if test="adId != null">
+				and ad_id = #{adId}
+			</if>
+		    
+			<if test="adName != null and adName!=''">
+				and ad_name = #{adName}
+			</if>
+			<if test="adStatus != null and adStatus!=0">
+				and ad_status = #{adStatus}
+			</if>
+			<if test="adProject != null and adProject!=0">
+				and ad_project = #{adProject}
+			</if>
+			<if test="adType != null and adType!=0">
+				and ad_type = #{adType}
+			</if>
+			<if test="adAddr != null">
+				and ad_addr = #{adAddr}
+			</if>
+			<if test="adSocialSoftware != null and adSocialSoftware!=0">
+				and ad_social_software = #{adSocialSoftware}
+			</if>
+			<if test="adCostBudget != null">
+				and ad_cost_budget = #{adCostBudget}
+			</if>
+			
+			<if test="adStartTime != null and adStartEnd != null">
+				 <![CDATA[and ad_start_time  between #{adStartTime,jdbcType=TIMESTAMP} and #{adStartEnd,jdbcType=TIMESTAMP} ]]>
+			</if>
+			
+			<if test="adStartTime != null and adStartEnd == null">
+				<![CDATA[and ad_start_time>=#{adStartTime,jdbcType=TIMESTAMP} ]]>
+			</if>
+			
+			<if test="adEndTime != null and adEndEnd != null">
+				<![CDATA[and ad_end_time  between #{adEndTime,jdbcType=TIMESTAMP} and  #{adEndEnd,jdbcType=TIMESTAMP}]]>
+			</if>
+			
+			<if test="adEndTime != null and adEndEnd == null">
+			<![CDATA[and ad_end_time<=#{adEndTime,jdbcType=TIMESTAMP} ]]>
+			</if>		
+			
+			limit #{offset,jdbcType=TIMESTAMP},#{pageSize,jdbcType=TIMESTAMP};	
+			
+		</where>
+	</select>
    
    <!-- 获取广告-->
 	<select id="findAdvert" resultType="_advert" parameterType="_advert">

@@ -1,6 +1,7 @@
 package com.elk.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,11 @@ public class AdvertService implements IAdvertService{
 	@Override
 	public List<Advert> getAdvertList(Advert advert) {
 		return advertDao.getAdvertList(advert);
+	}
+	
+	@Override
+	public List<Map<String, Object>> getAdvertMap(Advert advert) {
+		return advertDao.getAdvertMap(advert);
 	}
 	
 	@Override

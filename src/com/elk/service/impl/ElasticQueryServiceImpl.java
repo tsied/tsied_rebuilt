@@ -1,9 +1,12 @@
 package com.elk.service.impl;
 
+import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
+import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +16,10 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.QueryStringQueryBuilder;
+import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
@@ -53,37 +60,85 @@ public class ElasticQueryServiceImpl {
 	 * @return
 	 */
 	public Map<String, Object> flowRateQuery(String esIndexName, Date adStartTime, Date adEndTime,
-			List<Advert> advertAssortList) {
+			List<Advert> advertAssortList, String adKey) {
 
 		Map<String, Object> result = new HashMap<String, Object>();
 
 		List<Advert> hitResult = new ArrayList<Advert>();
+		Map<String, Object> sumResult = new HashMap<String, Object>();
+		
+		String adQuery = "";
 		String sourceFiled = "source_url.raw";
 		String delimiter = " and ";
-		String adQuery = "";
-
-		Map<String, Advert> adAdressMapping = new HashMap<String, Advert>();
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
-		for (int i = 0; i < advertAssortList.size(); i++) {
-			adQuery += i == 0 ? sourceFiled + ":" + advertAssortList.get(i).getAdAddr() : delimiter
-					+ advertAssortList.get(i).getAdAddr();
-			adAdressMapping.put(advertAssortList.get(i).getAdAddr(), advertAssortList.get(i));
+		Map<String, Advert> adAdressMapping = new HashMap<String, Advert>();
+		if (adKey == "ad") {
+			
+			List<String> domainQueryList = new ArrayList<String>();
+					
+			for (int i = 0; i < advertAssortList.size(); i++) {
+				adQuery += i == 0 ? sourceFiled + ":"
+						+ advertAssortList.get(i).getAdAddr() : delimiter
+						+ sourceFiled + ":"
+						+ advertAssortList.get(i).getAdAddr();
+				adAdressMapping.put(advertAssortList.get(i).getAdAddr(),
+						advertAssortList.get(i));
 
-			boolQueryBuilder.should(termQuery(sourceFiled, advertAssortList.get(i).getAdAddr()));
+				boolQueryBuilder.should(termQuery(sourceFiled, advertAssortList
+						.get(i).getAdAddr()));
+			}
+		}else{
+			adQuery = "*";
 		}
 		// QueryBuilder qb = queryStringQuery(StringUtils.isBlank(adQuery) ? "*"
 		// : adQuery);
-
+//		DateUtils.addDate(today, Calendar.DATE,
+//				dateInterval)
+		Integer dateInterval = -1;
+		System.out.println(DateUtils.formatEsTime(DateUtils.addDate(adEndTime, Calendar.DATE,
+				dateInterval).getTime()));
+		String gteDate = DateUtils.formatEsTime(DateUtils.addDate(adStartTime, Calendar.DATE,
+				dateInterval).getTime());
+		
+		String lteDate = DateUtils.formatEsTime(DateUtils.addDate(adEndTime, Calendar.DATE,
+				dateInterval).getTime());
+		
+		//******全索引（*）********//
+		
+//		QueryStringQueryBuilder qs = QueryBuilders.queryStringQuery("source_url.raw:news.sinyuwang.com and source_url.raw:360se8.com");
+//		RangeQueryBuilder range = QueryBuilders.rangeQuery("statsDate")
+//			    .gte(Long.parseLong("1464969600000"))
+//			    .lte(Long.parseLong("1464969600000"));
+		
+		
+		QueryBuilder qb = filteredQuery(queryStringQuery(adQuery).analyzeWildcard(true), rangeQuery("statsDate").gte(gteDate).lte(
+				lteDate));
+//		QueryBuilder qb = filteredQuery(queryStringQuery("*").analyzeWildcard(true), QueryBuilders.boolQuery().must(qs).must(range));
+		
+		
+		//**************//
+		
+		//******时间范围******//
+		boolQueryBuilder.filter(rangeQuery("statsDate").from(DateUtils.formatEsTime(adStartTime.getTime())).to(
+				DateUtils.formatEsTime(adEndTime.getTime())));
+		
+		//**************//
+		
 		// es search query
 		SearchRequestBuilder request = elasticsearchTemplate
 				.getClient()
 				.prepareSearch(esIndexName)
-				.setQuery(
-						rangeQuery("statsDate").from(DateUtils.formatEsTime(adStartTime.getTime())).to(
-								DateUtils.formatEsTime(adEndTime.getTime())))
+//				.setQuery(
+//						rangeQuery("statsDate").from(DateUtils.formatEsTime(adStartTime.getTime())).to(
+//								DateUtils.formatEsTime(adEndTime.getTime())))
 				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
-		request.setQuery(boolQueryBuilder);
-
+//		request.setQuery(boolQueryBuilder);
+		
+		
+		//******全索引（*）********//
+		request.setQuery(qb);
+		//**************//
+		
 		// SouceTerm Aggs
 		String souceTermAggs = "sourceUrlAggs";
 		TermsBuilder souceTermAggsBuilder = AggregationBuilders.terms(souceTermAggs).field(sourceFiled).size(0);
@@ -200,18 +255,194 @@ public class ElasticQueryServiceImpl {
 			sumBounceSessionCount += sumBounceSessionCountAggs.value();
 		}
 
-		result.put("hitResult", hitResult);
-		result.put("sumPv", sumPv);
-		result.put("sumUv", sumUv);
-		result.put("sumIpStats", sumIpStats);
-		result.put("sumSessionStat", sumSessionStat);
-		result.put("avgSessionTime", String.format("%.0f", sumSessionTime / (souceTerms.getBuckets().size() * 1000)));
-		result.put("avgReqPages", String.format("%.2f", sumReqPages / souceTerms.getBuckets().size()));
-		result.put("sumExitSessionCount", sumExitSessionCount);
-		result.put("sumBounceSessionCount", sumBounceSessionCount);
-
-		result.put("bounceRate",
+		sumResult.put("sumPv", sumPv);
+		sumResult.put("sumUv", sumUv);
+		sumResult.put("sumIpStats", sumIpStats);
+		sumResult.put("sumSessionStat", sumSessionStat);
+		sumResult.put("avgSessionTime", String.format("%.0f", sumSessionTime / (souceTerms.getBuckets().size() * 1000)));
+		sumResult.put("avgReqPages", String.format("%.2f", sumReqPages / souceTerms.getBuckets().size()));
+		sumResult.put("sumExitSessionCount", sumExitSessionCount);
+		sumResult.put("sumBounceSessionCount", sumBounceSessionCount);
+		sumResult.put("bounceRate",
 				String.format("%.4f", sumSessionStat == 0 ? 0.0 : sumBounceSessionCount / sumSessionStat));
+		
+		result.put("hitResult", hitResult);
+		result.put("sumResult", sumResult);
+
+		return result;
+	}
+	
+	
+	public Map<String, Object> userRateQuery(String esIndexName, Date adStartTime, Date adEndTime,
+			List<Advert> advertAssortList, String adKey) {
+
+		Map<String, Object> result = new HashMap<String, Object>();
+
+		List<Advert> hitResult = new ArrayList<Advert>();
+		Map<String, Object> sumResult = new HashMap<String, Object>();
+		
+		String adQuery = "";
+		String sourceFiled = "source_url.raw";
+		String delimiter = " and ";
+		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
+		Map<String, Advert> adAdressMapping = new HashMap<String, Advert>();
+		if (adKey == "ad") {
+			
+			List<String> domainQueryList = new ArrayList<String>();
+					
+			for (int i = 0; i < advertAssortList.size(); i++) {
+				adQuery += i == 0 ? sourceFiled + ":"
+						+ advertAssortList.get(i).getAdAddr() : delimiter
+						+ sourceFiled + ":"
+						+ advertAssortList.get(i).getAdAddr();
+				adAdressMapping.put(advertAssortList.get(i).getAdAddr(),
+						advertAssortList.get(i));
+
+				boolQueryBuilder.should(termQuery(sourceFiled, advertAssortList
+						.get(i).getAdAddr()));
+			}
+		}else{
+			adQuery = "*";
+		}
+		// QueryBuilder qb = queryStringQuery(StringUtils.isBlank(adQuery) ? "*"
+		// : adQuery);
+//		DateUtils.addDate(today, Calendar.DATE,
+//				dateInterval)
+		Integer dateInterval = -1;
+		System.out.println(DateUtils.formatEsTime(DateUtils.addDate(adEndTime, Calendar.DATE,
+				dateInterval).getTime()));
+		String gteDate = DateUtils.formatEsTime(DateUtils.addDate(adStartTime, Calendar.DATE,
+				dateInterval).getTime());
+		
+		String lteDate = DateUtils.formatEsTime(DateUtils.addDate(adEndTime, Calendar.DATE,
+				dateInterval).getTime());
+		
+		//******全索引（*）********//
+		
+//		QueryStringQueryBuilder qs = QueryBuilders.queryStringQuery("source_url.raw:news.sinyuwang.com and source_url.raw:360se8.com");
+//		RangeQueryBuilder range = QueryBuilders.rangeQuery("statsDate")
+//			    .gte(Long.parseLong("1464969600000"))
+//			    .lte(Long.parseLong("1464969600000"));
+		
+		
+		QueryBuilder qb = filteredQuery(queryStringQuery(adQuery).analyzeWildcard(true), rangeQuery("statsDate").gte(gteDate).lte(
+				lteDate));
+//		QueryBuilder qb = filteredQuery(queryStringQuery("*").analyzeWildcard(true), QueryBuilders.boolQuery().must(qs).must(range));
+		
+		
+		//**************//
+		
+		//******时间范围******//
+		boolQueryBuilder.filter(rangeQuery("statsDate").from(DateUtils.formatEsTime(adStartTime.getTime())).to(
+				DateUtils.formatEsTime(adEndTime.getTime())));
+		
+		//**************//
+		
+		// es search query
+		SearchRequestBuilder request = elasticsearchTemplate
+				.getClient()
+				.prepareSearch(esIndexName)
+//				.setQuery(
+//						rangeQuery("statsDate").from(DateUtils.formatEsTime(adStartTime.getTime())).to(
+//								DateUtils.formatEsTime(adEndTime.getTime())))
+				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+//		request.setQuery(boolQueryBuilder);
+		
+		
+		//******全索引（*）********//
+		request.setQuery(qb);
+		//**************//
+		
+		// SouceTerm Aggs
+		String souceTermAggs = "sourceUrlAggs";
+		TermsBuilder souceTermAggsBuilder = AggregationBuilders.terms(souceTermAggs).field(sourceFiled).size(0);
+		request.addAggregation(souceTermAggsBuilder);
+
+		// loginusercnt
+		String lucAggs = "lucAggs";
+		String lucField = "loginusercnt";
+		SumBuilder lucAggsBuild = AggregationBuilders.sum(lucAggs).field(lucField);
+		souceTermAggsBuilder.subAggregation(lucAggsBuild);
+
+		// regusercnt
+		String rucAggs = "rucAggs";
+		String rucField = "regusercnt";
+		SumBuilder rucAggsBuild = AggregationBuilders.sum(rucAggs).field(rucField);
+		souceTermAggsBuilder.subAggregation(rucAggsBuild);
+
+		// sdrate
+		String sdRateAggs = "sdRateAggs";
+		String sdRateField = "sdrate";
+		AvgBuilder sdRateAggsBuild = AggregationBuilders.avg(sdRateAggs).field(sdRateField);
+		souceTermAggsBuilder.subAggregation(sdRateAggsBuild);
+
+		// tdrate
+		String tdrateAggs = "tdrateAggs";
+		String tdrateField = "tdrate";
+		AvgBuilder tdrateAggsBuild = AggregationBuilders.avg(tdrateAggs).field(tdrateField);
+		souceTermAggsBuilder.subAggregation(tdrateAggsBuild);
+
+		// ydrate
+		String ydrateAggs = "ydrateAggs";
+		String ydrateField = "ydrate";
+		AvgBuilder ydrateAggsBuild = AggregationBuilders.avg(ydrateAggs).field(ydrateField);
+		souceTermAggsBuilder.subAggregation(ydrateAggsBuild);
+
+		
+
+		log.debug(request.toString());
+
+		SearchResponse response = request.execute().actionGet();
+
+		log.debug(response.toString());
+
+		// result handle
+		Double sumLuc = 0.0;
+		Double sumRuc = 0.0;
+		Double avgSdRate = 0.0;
+		Double avgTdRate = 0.0;
+		Double avgYdRate = 0.0;
+
+
+		Terms souceTerms = response.getAggregations().get(souceTermAggs);
+		for (Terms.Bucket souceTerm : souceTerms.getBuckets()) {
+
+			String adAddr = (String) souceTerm.getKey();
+			Advert ad = adAdressMapping.get(adAddr);
+			if (ad == null) {
+				continue;
+			}
+			Sum sumLucAggs = souceTerm.getAggregations().get(lucAggs);
+			Sum sumRucAggs = souceTerm.getAggregations().get(rucAggs);
+			Avg avgSdRateAggs = souceTerm.getAggregations().get(sdRateAggs);
+			Avg avgTdRateAggs = souceTerm.getAggregations().get(tdrateAggs);
+			Avg avgYdRateAggs = souceTerm.getAggregations().get(ydrateAggs);
+			
+			ad.setRegisterUser(Double.valueOf(sumRucAggs.value()).intValue());
+			ad.setLoginUserNum(Double.valueOf(sumLucAggs.value()).intValue());
+			ad.setNextDayRetention(Double.valueOf(avgYdRateAggs.value()));
+			ad.setThrDaysRetention(Double.valueOf(avgTdRateAggs.value()));
+			ad.setSevenDaysRetention(Double.valueOf(avgSdRateAggs.value()));
+			
+
+			hitResult.add(ad);
+
+			sumLuc += sumLucAggs.value();
+			sumRuc += sumRucAggs.value();
+			avgSdRate += avgSdRateAggs.value();
+			avgTdRate += avgTdRateAggs.value();
+			avgYdRate += avgYdRateAggs.value();
+
+		}
+
+		sumResult.put("sumLuc", sumLuc);
+		sumResult.put("sumRuc", sumRuc);
+		sumResult.put("avgSdRate", avgSdRate);
+		sumResult.put("avgTdRate", avgTdRate);
+		sumResult.put("avgYdRate", avgYdRate);
+		
+		result.put("hitResult", hitResult);
+		result.put("sumResult", sumResult);
 
 		return result;
 	}
